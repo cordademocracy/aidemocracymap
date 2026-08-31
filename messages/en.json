@@ -1,0 +1,273 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+
+  "common.siteTitle": "Map of AI & Democracy",
+  "common.brandName": "AI4Democracy",
+  "common.skipToContent": "Skip to main content",
+  "common.backToMap": "← Back to map",
+  "common.cancel": "Cancel",
+  "common.close": "Close",
+  "common.optional": "Optional",
+  "common.loadingOrgs": "Loading organizations…",
+  "common.imagePlaceholder": "IMG",
+  "common.addOrg": "+ Add organization",
+  "common.district": "District",
+  "common.brand.before": "AI",
+  "common.brand.accent": "4",
+  "common.brand.after": "Democracy",
+  "common.nav.fieldMap": "Field map",
+  "common.nav.cards": "Cards",
+  "common.nav.about": "About",
+  "common.nav.searchPlaceholder": "Search organizations…",
+
+  "map.indexLabel": "All organizations by district",
+  "map.indexHeading": "Organizations by district",
+  "map.viewCards": "View cards ↓",
+  "map.legend.chip": "Map key",
+  "map.legend.dismiss": "Dismiss the map key",
+  "map.attribution.madeBy": "made with ❤️ in 🌍 by",
+  "map.attribution.about": "About",
+  "map.attribution.github": "GitHub",
+  "map.tooltip.details": "Details",
+  "map.tooltip.website": "Website ↗",
+
+  "cards.docTitle": "Cards",
+  "cards.eyebrow": "Card view",
+  "cards.heading": "The field, card by card",
+  "cards.searchLabel": "Filter organizations by name, tag or description",
+  "cards.searchPlaceholder": "Search name, tags, description…",
+  "cards.filters": "Filters",
+  "cards.filtersActive": "Filters · {label}",
+  "cards.allCategories": "All {total}",
+  "cards.categoryChip": "{label} {count}",
+  "cards.count": "{shown} of {total} organizations",
+  "cards.countFiltered": "{shown} of {total} organizations matching “{query}”",
+  "cards.empty": "Nothing matches. Clear a filter.",
+
+  "org.notFound": "Organization not found",
+  "org.visitWebsite": "Visit website ↗",
+  "org.founded": "Est. {year}",
+  "org.cardFounded": " · est. {year}",
+  "org.whatTheyDo": "What they do",
+  "org.whyOnMap": "Why they're on this map",
+  "org.keyProjects": "Key projects & publications",
+  "org.focusAreas": "Focus areas",
+  "org.funders": "Known funders",
+  "org.moreIn": "More in",
+
+  "about.label": "About",
+  "about.heading": "About this map",
+  "about.intro": "maps the {count} organizations, research groups, tools, and funders working on the intersection of AI and democracy: AI safety for democratic institutions, mid-term structural impacts, gradual disempowerment, concentration of power, collective intelligence, information integrity, and voting technology.",
+  "about.homage.body": "The layout and style of the page is inspired by the {link}.",
+  "about.homage.linkText": "AISafety.com field map",
+  "about.districtsHeading": "The districts",
+  "about.ringsHeading": "Inclusion rings",
+  "about.ringsLead": "Every entry is tagged with a depth ring:",
+  "about.rings.core": "explicitly working on AI × democracy",
+  "about.rings.adjacent": "AI-safety organizations with a democracy or power-concentration workstream",
+  "about.rings.broad": "long-standing democracy and collective-intelligence institutions whose work now collides with AI",
+  "about.methodHeading": "Method & motivation",
+  "about.method": "All entries on the map are from across different sources and map initiatives ranging from AI safety, civic tech and democracy. \n\nWe started this map out to (1) share our personal map of the field we built up over the last year, and (2) collaborate with the community on creating {#i}the{/i} map for anything AI x Democracy in times where its much needed. Feel free to use the on-page button to contribute.",
+  "about.creditsHeading": "Credits & Acknowledgements",
+  "about.credits.body": "Thanks to {sean}, whose {site} seeded part of this map and whose feedback and collaboration shaped ai4democracy.world. \n\n Maintained by {corda} — ideas and suggestions: {email}.",
+
+  "errors.network": "Can't reach the server right now.",
+  "errors.generic": "Something broke. Try again.",
+  "errors.formToken": "Couldn't reach the form service.",
+  "errors.rateLimited": "Too many submissions. Try again later.",
+  "errors.orgGone": "This organization no longer exists.",
+  "errors.imageTooLarge": "Image too large (max 1 MB).",
+  "errors.unsupportedImage": "Not a supported image.",
+  "errors.staleForm": "This form sat open too long. Submit again.",
+  "errors.requestFailed": "Request failed ({status}).",
+
+  "forms.discardConfirm": "Discard this form? Your entries will be lost.",
+  "forms.submit": "Submit for review",
+  "forms.submitting": "Submitting…",
+  "forms.submittedEyebrow": "Submitted",
+  "forms.submittedHeading": "Thanks — pending review.",
+  "forms.identityHint": "Optional. Only the reviewing admin sees it.",
+  "forms.urlPlaceholder": "https://example.org",
+  "forms.invalidWebsite": "Enter a valid website URL (http:// or https://).",
+  "forms.nameRequired": "Name is required.",
+  "forms.changeCount": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} change",
+        "countPlural=other": "{count} changes"
+      }
+    }
+  ],
+
+  "forms.fields.orgName": "Organization name",
+  "forms.fields.name": "Name",
+  "forms.fields.tagline": "Tagline",
+  "forms.fields.description": "Description",
+  "forms.fields.angle": "Why on this map",
+  "forms.fields.website": "Website",
+  "forms.fields.websiteUrl": "Website URL",
+  "forms.fields.logo": "Replace logo",
+  "forms.fields.category": "Category",
+  "forms.fields.depthRing": "Depth ring",
+  "forms.fields.founded": "Founded",
+  "forms.fields.location": "Location",
+  "forms.fields.funders": "Funders",
+  "forms.fields.keyProjects": "Key projects",
+  "forms.fields.yourName": "Your name",
+  "forms.fields.email": "Email",
+  "forms.fields.yourEmail": "Your email",
+
+  "forms.addOrg.title": "Add an organization",
+  "forms.addOrg.heading": "Propose a new entry",
+  "forms.addOrg.submitted": "We'll research it and add it to the map after review.",
+  "forms.addOrg.extraLink": "Link {n}",
+  "forms.addOrg.addLink": "+ Add another link",
+  "forms.addOrg.noteLabel": "Why it belongs",
+  "forms.addOrg.notePlaceholder": "How this organization connects AI safety and democracy",
+  "forms.addOrg.emailPlaceholder": "Optional — you@example.org",
+  "forms.addOrg.invalidEmail": "Enter a valid email address.",
+  "forms.addOrg.websiteRequired": "The website URL is required.",
+  "forms.addOrg.invalidLinks": "Links must be valid URLs (http:// or https://).",
+  "forms.addOrg.noteRequired": "Tell us why it belongs on the map.",
+  "forms.addOrg.fallbackError": "Please check your entries and try again.",
+
+  "forms.suggestEdit.title": "Suggest an edit",
+  "forms.suggestEdit.dialogLabel": "Suggest an edit to {orgName}",
+  "forms.suggestEdit.submitted": "An admin reviews it before it goes live.",
+  "forms.suggestEdit.editedBadge": " · edited",
+  "forms.suggestEdit.clearedHint": "Cleared fields aren't submitted. Replace the text, don't blank it.",
+  "forms.suggestEdit.logoHint": "PNG, JPEG or WebP, up to 1 MB. Leave empty to keep the current logo.",
+  "forms.suggestEdit.noChanges": "Edit at least one field before submitting.",
+  "forms.suggestEdit.fallbackError": "Please shorten your text and try again.",
+
+  "forms.logoPicker.choose": "Choose image",
+  "forms.logoPicker.change": "Change image",
+  "forms.logoPicker.remove": "Remove",
+
+  "admin.eyebrow": "Admin",
+  "admin.accessNote": "Sign-in by emailed link.",
+  "admin.accessDenied": "Not authorized. Request a login link to continue.",
+  "admin.loginRequest": "Email me a login link",
+  "admin.loginSending": "Sending…",
+  "admin.loginFailed": "Couldn't send the link. Check Email Routing, or use the break-glass token.",
+  "admin.loginSent": "Check your inbox for the login link. It expires in 15 minutes.",
+  "admin.approvedTriaged": "Approved — goes live with the next data publish from the audit pipeline.",
+  "admin.queueHeading": "Review queue",
+  "admin.tabEdits": "Edits",
+  "admin.tabSubmissions": "New organizations",
+  "admin.status.pending": "Pending",
+  "admin.status.approved": "Approved",
+  "admin.status.rejected": "Rejected",
+  "admin.fieldLabels.logoUpload": "Replacement logo",
+  "admin.empty.pending": "Nothing pending.",
+  "admin.empty.approved": "Nothing approved.",
+  "admin.empty.rejected": "Nothing rejected.",
+  "admin.editCount.pending": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} pending edit",
+        "countPlural=other": "{count} pending edits"
+      }
+    }
+  ],
+  "admin.editCount.approved": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} approved edit",
+        "countPlural=other": "{count} approved edits"
+      }
+    }
+  ],
+  "admin.editCount.rejected": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} rejected edit",
+        "countPlural=other": "{count} rejected edits"
+      }
+    }
+  ],
+  "admin.submissionCount.pending": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} pending submission",
+        "countPlural=other": "{count} pending submissions"
+      }
+    }
+  ],
+  "admin.submissionCount.approved": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} approved submission",
+        "countPlural=other": "{count} approved submissions"
+      }
+    }
+  ],
+  "admin.submissionCount.rejected": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} rejected submission",
+        "countPlural=other": "{count} rejected submissions"
+      }
+    }
+  ],
+  "admin.loading": "Loading…",
+  "admin.editResolved": "That edit was already resolved.",
+  "admin.submissionResolved": "That submission was already resolved.",
+  "admin.current": "Current",
+  "admin.proposed": "Proposed",
+  "admin.approve": "Approve",
+  "admin.reject": "Reject",
+  "admin.busy": "…",
+  "admin.noContactEmail": "No contact email",
+  "admin.draftReady": "Draft saved — ready to approve",
+  "admin.draftNeeded": "Enrich before approving.",
+  "admin.closeEditor": "Close editor",
+  "admin.editDraft": "Edit draft",
+  "admin.enrich": "Enrich",
+  "admin.anonymous": "Submitted anonymously",
+  "admin.contributor": "From {parts}",
+
+  "admin.draft.heading": "Enrich draft",
+  "admin.draft.unsaved": "unsaved changes",
+  "admin.draft.save": "Save draft",
+  "admin.draft.saving": "Saving…",
+  "admin.draft.select": "Select…",
+  "admin.draft.foundedPlaceholder": "Year",
+  "admin.draft.focusTags": "Focus tags (max {max})",
+  "admin.draft.tagPlaceholder": "add + Enter",
+  "admin.draft.projectName": "name",
+  "admin.draft.projectUrl": "url",
+  "admin.draft.projectNote": "note",
+  "admin.draft.addProject": "+ Add project",
+  "admin.draft.taglineRequired": "Tagline is required.",
+  "admin.draft.descriptionRequired": "Description is required.",
+  "admin.draft.categoryRequired": "Pick a category.",
+  "admin.draft.districtRequired": "Pick a district.",
+  "admin.draft.tooManyTags": "At most {max} focus tags.",
+  "admin.draft.invalidFounded": "Founded should be a 4-digit year.",
+  "admin.draft.projectNameRequired": "Every key project needs a name.",
+  "admin.draft.invalidProjectUrl": "Key project URLs must be valid.",
+
+  "notFound.eyebrow404": "Error 404",
+  "notFound.eyebrowError": "Error",
+  "notFound.heading404": "Lost at sea",
+  "notFound.headingError": "Something ran aground",
+  "notFound.body404": "That page isn't on the map.",
+  "notFound.bodyError": "The app hit an unexpected error. Going back to the island usually fixes it.",
+  "notFound.backToMap": "Back to map",
+  "notFound.openEditor": "Open layout editor"
+}
