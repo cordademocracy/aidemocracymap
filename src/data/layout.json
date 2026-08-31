@@ -1,0 +1,586 @@
+{
+  "nodes": {
+    "wahltraut": {
+      "x": 448.28386400501256,
+      "y": 836.463193660952
+    },
+    "vote-compass": {
+      "x": 468.02818908810434,
+      "y": 804.3499341750944
+    },
+    "isidewith": {
+      "x": 478.69218063163623,
+      "y": 740.1214556322159
+    },
+    "sortition-foundation": {
+      "x": 516.9824499985137,
+      "y": 626.942839356561
+    },
+    "smartvote": {
+      "x": 559.3012285551216,
+      "y": 749.2350316956575
+    },
+    "democracy-technologies": {
+      "x": 565.6507820781972,
+      "y": 620.76
+    },
+    "nesta-centre-for-collective-intelligence-design": {
+      "x": 603.5055814360481,
+      "y": 624.2123621375493
+    },
+    "loomio": {
+      "x": 670.01218913081,
+      "y": 614.7289752946609
+    },
+    "democracy-works-turbovote": {
+      "x": 538.7709500386198,
+      "y": 723.6557150151953
+    },
+    "perplexity-election-information-hub": {
+      "x": 668.8372285295658,
+      "y": 733.3519266889563
+    },
+    "ballotpedia": {
+      "x": 644.81,
+      "y": 776.0931058601774
+    },
+    "corda-democracy-fellowship": {
+      "x": 1000.5401308369103,
+      "y": 536.4703516641771,
+      "r": 21
+    },
+    "euandi": {
+      "x": 594.2335677073725,
+      "y": 820.5829837262671
+    },
+    "voto-informado-cr": {
+      "x": 546.2255765308893,
+      "y": 873.7206345302186
+    },
+    "wahl-o-chat": {
+      "x": 573.0409344180719,
+      "y": 851.4071742095128
+    },
+    "openvaa": {
+      "x": 481.54308897791424,
+      "y": 865.5687946233911
+    },
+    "oecd-innovative-citizen-participation-network": {
+      "x": 796.3695522273812,
+      "y": 699.8048435154789
+    },
+    "burnes-center-for-social-change-innovateus": {
+      "x": 810.5136744562163,
+      "y": 732.4805091505061
+    },
+    "focal-cmu-foundations-of-cooperative-ai-lab": {
+      "x": 768.9056334720212,
+      "y": 731.68070023834
+    },
+    "vote411": {
+      "x": 526.6810039627267,
+      "y": 746.6185788292343
+    },
+    "more-in-common": {
+      "x": 814.3649290202491,
+      "y": 810.42
+    },
+    "stemwijzer-votematch": {
+      "x": 499.26514983534344,
+      "y": 842.2379125407298
+    },
+    "apolitical": {
+      "x": 834.2639062554879,
+      "y": 840.4799932806467
+    },
+    "effective-institutions-project": {
+      "x": 861.9666168350769,
+      "y": 815.00587997774
+    },
+    "national-democratic-institute-ndi": {
+      "x": 1102.6641707134934,
+      "y": 813.9846078203532
+    },
+    "center-on-long-term-risk": {
+      "x": 1077.1918237235832,
+      "y": 736.5102575181112
+    },
+    "new-america-political-reform": {
+      "x": 890.1992037660096,
+      "y": 688.7802300705687
+    },
+    "cooperative-ai-foundation": {
+      "x": 893.3562326852921,
+      "y": 728.1647029248354
+    },
+    "popvox-foundation": {
+      "x": 943.0882959086408,
+      "y": 736.3705376385568
+    },
+    "freedom-house": {
+      "x": 1047.8026182367062,
+      "y": 750.3609840732635
+    },
+    "international-idea": {
+      "x": 1232.08,
+      "y": 804.091058881523
+    },
+    "v-dem-institute-varieties-of-democracy": {
+      "x": 1164.1332431865326,
+      "y": 829.4680434435081
+    },
+    "international-republican-institute-iri": {
+      "x": 1249.509203611401,
+      "y": 824.1576825073611
+    },
+    "interface-formerly-stiftung-neue-verantwortung": {
+      "x": 1192.654137696185,
+      "y": 822.3895763470567
+    },
+    "oxford-internet-institute-programme-on-democracy-and-technology": {
+      "x": 1193.2921391687353,
+      "y": 747.3539231163833
+    },
+    "apart-research": {
+      "x": 1176.6577518039119,
+      "y": 635.8178830284735
+    },
+    "rethink-priorities": {
+      "x": 1143.7230650561044,
+      "y": 584.4180237382571
+    },
+    "windfall-trust": {
+      "x": 1163.4530233261507,
+      "y": 542.3053295690879
+    },
+    "gradual-disempowerment-research-project": {
+      "x": 1352.232843539304,
+      "y": 526.7722542185779
+    },
+    "80-000-hours": {
+      "x": 1317.024836842984,
+      "y": 547.9017972823619
+    },
+    "acs-research-group-alignment-of-complex-systems": {
+      "x": 1252.4502416603755,
+      "y": 528.9206315305759
+    },
+    "convergence-analysis": {
+      "x": 1311.0505961257927,
+      "y": 692.7873187268835
+    },
+    "ai-futures-project": {
+      "x": 1360.8920604206037,
+      "y": 587.7412666040632
+    },
+    "intelligence-curse": {
+      "x": 1259.464218891657,
+      "y": 664.6085876803116
+    },
+    "truemedia-org": {
+      "x": 953.0004960205689,
+      "y": 603.125611040323,
+      "r": 16.5
+    },
+    "ai-objectives-institute-aoi": {
+      "x": 1123.7570968090981,
+      "y": 407.60280268993944
+    },
+    "dgap-ai-democracy-initiative": {
+      "x": 1075.9832108852572,
+      "y": 527.4711130762674
+    },
+    "data-and-society": {
+      "x": 1085.4470749425147,
+      "y": 434.1275840735192,
+      "r": 13
+    },
+    "partnership-on-ai-pai": {
+      "x": 862.2629169557824,
+      "y": 275.26407722496253
+    },
+    "machine-intelligence-research-institute-miri": {
+      "x": 978.8640404587696,
+      "y": 345.60438125206343
+    },
+    "ford-foundation-technology-and-society": {
+      "x": 637.9797083517308,
+      "y": 357.48581969683084
+    },
+    "federation-of-american-scientists": {
+      "x": 793.7060493750056,
+      "y": 273.90443945918025
+    },
+    "power-for-democracies": {
+      "x": 693.4684627822762,
+      "y": 363.6251191550343
+    },
+    "ada-lovelace-institute": {
+      "x": 1027.0527443527185,
+      "y": 429.6173686465922,
+      "r": 14.5
+    },
+    "institute-for-strategic-dialogue-isd": {
+      "x": 964.529173696753,
+      "y": 507.9044637130989,
+      "r": 14.5
+    },
+    "collective-intelligence-project-cip": {
+      "x": 1094.384003324139,
+      "y": 369.55758273670847
+    },
+    "aspen-digital-ai-elections-initiative": {
+      "x": 964.2042156010706,
+      "y": 551.1262109683546,
+      "r": 13.5
+    },
+    "integrity-institute": {
+      "x": 798.0851436692068,
+      "y": 565.9703036570357,
+      "r": 11.5
+    },
+    "brennan-center-for-justice-ai-and-elections": {
+      "x": 778.420295010306,
+      "y": 610.2261638901449,
+      "r": 14.5
+    },
+    "jigsaw-google": {
+      "x": 855.5583995887529,
+      "y": 607.2670378131771,
+      "r": 12.5
+    },
+    "witness": {
+      "x": 981.8742822714707,
+      "y": 627.0242281843953,
+      "r": 14
+    },
+    "meaning-alignment-institute": {
+      "x": 1121.1969912504558,
+      "y": 455.34643908048406
+    },
+    "mozilla-foundation": {
+      "x": 711.5077196570627,
+      "y": 303.16998399038636,
+      "r": 9
+    },
+    "humanity-ai": {
+      "x": 671.9416102842126,
+      "y": 434.04057355136024,
+      "r": 12
+    },
+    "knight-foundation": {
+      "x": 652.652196230936,
+      "y": 332.0124192944618,
+      "r": 8.5
+    },
+    "cosmos-institute": {
+      "x": 700.9332691690867,
+      "y": 434.43952593459176,
+      "r": 10
+    },
+    "stiftung-mercator": {
+      "x": 622.1580227037678,
+      "y": 330.17851803752933,
+      "r": 13.5
+    },
+    "global-disinformation-index": {
+      "x": 759.0996449797537,
+      "y": 574.2919233549455
+    },
+    "coefficient-giving": {
+      "x": 534.2242448035304,
+      "y": 364.48522818336596
+    },
+    "luminate": {
+      "x": 556.49,
+      "y": 372.74242811668034,
+      "r": 8.5
+    },
+    "survival-and-flourishing-fund": {
+      "x": 548.7790319017802,
+      "y": 425.7102435468471,
+      "r": 9.5
+    },
+    "omidyar-network": {
+      "x": 590.6637185363765,
+      "y": 321.561547412481,
+      "r": 11
+    },
+    "vtaiwan": {
+      "x": 578.2748156031163,
+      "y": 536.5437892117659
+    },
+    "stanford-deliberative-democracy-lab": {
+      "x": 527.7195284113918,
+      "y": 480.6083866745061,
+      "r": 19.5
+    },
+    "reset-tech": {
+      "x": 611.292281068464,
+      "y": 365.5614874873509
+    },
+    "democracynext": {
+      "x": 486.0072539572859,
+      "y": 493.58952580506354
+    },
+    "plurality-institute": {
+      "x": 521.8252698238967,
+      "y": 544.5550915463651
+    },
+    "newdemocracy-foundation": {
+      "x": 451.2065567845716,
+      "y": 556.6644605480543
+    },
+    "consul-democracy": {
+      "x": 635.4916149556924,
+      "y": 512.9307669075453
+    },
+    "iswe-foundation": {
+      "x": 602.995058280106,
+      "y": 514.3978628410147
+    },
+    "hewlett-foundation": {
+      "x": 662.5422666344211,
+      "y": 463.840191076748
+    },
+    "ai-democracy-projects": {
+      "x": 727.455248540003,
+      "y": 530.3449908872356,
+      "r": 12
+    },
+    "radicalxchange": {
+      "x": 689.3496906015448,
+      "y": 582.6624671793443,
+      "r": 12
+    },
+    "metagov": {
+      "x": 699.2288486893285,
+      "y": 625.2023978680246,
+      "r": 13.5
+    },
+    "g0v-gov-zero": {
+      "x": 456.7865837010133,
+      "y": 617.6349527313031
+    },
+    "mit-center-for-collective-intelligence": {
+      "x": 427.6995817404813,
+      "y": 626.1488097537814,
+      "r": 11
+    },
+    "wahl-o-mat": {
+      "x": 508.4697877642634,
+      "y": 864.5204956389098
+    },
+    "fide-federation-for-innovation-in-democracy": {
+      "x": 567.2975814537838,
+      "y": 644.7001132591874
+    },
+    "people-powered-global-hub-for-participatory-democracy": {
+      "x": 666.4437784543331,
+      "y": 549.4535220323029
+    },
+    "eu-disinfolab": {
+      "x": 778.1082449951774,
+      "y": 494.4155480060085,
+      "r": 10.5
+    },
+    "schmidt-sciences-ai2050": {
+      "x": 730.5236910404801,
+      "y": 432.2616541106037,
+      "r": 11.5
+    },
+    "kieskompas": {
+      "x": 577.1229999654564,
+      "y": 721.5126305573318
+    },
+    "wahlswiper-voteswiper": {
+      "x": 609.8355905504793,
+      "y": 858.7727172302888
+    },
+    "siegel-family-endowment": {
+      "x": 665.3737600936256,
+      "y": 364.9968459200094
+    },
+    "demos-casm-demos-digital": {
+      "x": 907.5995786570959,
+      "y": 569.3923517719818
+    },
+    "alliance4europe": {
+      "x": 824.9686346410089,
+      "y": 486.9129445797393
+    },
+    "cetas-centre-for-emerging-technology-and-security": {
+      "x": 888.9235526875873,
+      "y": 487.2967077696376
+    },
+    "digital-forensic-research-lab-dfrlab-atlantic-council": {
+      "x": 1224.1213654057067,
+      "y": 849.9078480375788
+    },
+    "council-on-technology-and-social-cohesion": {
+      "x": 924.8959603299969,
+      "y": 699.2987742734052
+    },
+    "mysociety": {
+      "x": 866.4896843981404,
+      "y": 854.5568326338298
+    },
+    "code-for-america": {
+      "x": 753.9261827941064,
+      "y": 774.8530779110012
+    },
+    "yle-vaalikone": {
+      "x": 608.067802757387,
+      "y": 729.5966578660198
+    },
+    "founders-pledge-global-catastrophic-risks-fund": {
+      "x": 561.6892215455732,
+      "y": 506.30388011209317
+    },
+    "foresight-institute": {
+      "x": 744.8587033383895,
+      "y": 382.3137205533878
+    },
+    "alliance-for-securing-democracy-german-marshall-fund": {
+      "x": 1275.788678874811,
+      "y": 806.7096735618571
+    },
+    "alliance-of-democracies-foundation": {
+      "x": 1139.3165950681896,
+      "y": 814.57
+    },
+    "bertelsmann-stiftung-upgrade-democracy": {
+      "x": 1137.7031850200938,
+      "y": 740.2871743847735
+    },
+    "carnegie-endowment-for-international-peace": {
+      "x": 1253.5840390435606,
+      "y": 782.9418299586179
+    },
+    "center-for-an-informed-public-university-of-washington": {
+      "x": 1109.0884020414367,
+      "y": 721.141648473948
+    },
+    "center-for-democracy-and-technology-cdt": {
+      "x": 1121.1019056010791,
+      "y": 851.7561312280203
+    },
+    "international-foundation-for-electoral-systems-ifes": {
+      "x": 1063.9529508625412,
+      "y": 814.6059819500828
+    },
+    "govlab-the-governance-lab": {
+      "x": 774.3267627163061,
+      "y": 816.9558010025935
+    },
+    "berkman-klein-center-applied-social-media-lab": {
+      "x": 540.089755279313,
+      "y": 639.4681959975296
+    },
+    "computational-democracy-project-pol-is": {
+      "x": 605.0925609183429,
+      "y": 669.2221911607255
+    },
+    "cortico": {
+      "x": 660.8573528595468,
+      "y": 652.5259037054096
+    },
+    "decidim": {
+      "x": 610.123784468556,
+      "y": 545.9167243524568
+    },
+    "harvard-ash-center-allen-lab-for-democracy-renovation-and-getting-plurality": {
+      "x": 520.5630471420149,
+      "y": 673.6964581727156
+    },
+    "make-org": {
+      "x": 413.6491694526138,
+      "y": 569.4045510666754
+    },
+    "mit-center-for-constructive-communication": {
+      "x": 455.78380002989195,
+      "y": 519.4609177735268
+    },
+    "remesh": {
+      "x": 481.43057762657196,
+      "y": 647.6154081599386
+    },
+    "future-of-life-institute": {
+      "x": 766.347459123467,
+      "y": 420.02046085322536
+    },
+    "longview-philanthropy": {
+      "x": 623.2188623529158,
+      "y": 452.6037040354524
+    },
+    "macroscopic-ventures": {
+      "x": 582.6775919269762,
+      "y": 439.9794929741048
+    },
+    "patrick-j-mcgovern-foundation": {
+      "x": 726.843529259617,
+      "y": 340.2858651361505
+    },
+    "ai-now-institute": {
+      "x": 860.4131631697621,
+      "y": 393.29287255106277
+    },
+    "algorithmwatch": {
+      "x": 812.4644409307731,
+      "y": 410.9993083842315
+    },
+    "center-for-ai-and-digital-policy-caidp": {
+      "x": 755.2412465419283,
+      "y": 302.7709602723532
+    },
+    "centre-for-international-governance-innovation-cigi": {
+      "x": 921.5831132391438,
+      "y": 403.72429438276305
+    },
+    "protect-democracy-ai-for-democracy-action-lab": {
+      "x": 917.8716462110513,
+      "y": 280.4067150391856
+    },
+    "simon-institute-for-longterm-governance": {
+      "x": 960.5480013936071,
+      "y": 310.18314466532854
+    },
+    "future-society": {
+      "x": 975.5859751126193,
+      "y": 390.3271163609859
+    },
+    "microsoft-democracy-forward": {
+      "x": 837.8168010075369,
+      "y": 567.6427061790081
+    },
+    "centre-for-the-governance-of-ai-govai": {
+      "x": 1111.1886224945054,
+      "y": 560.4910916726421
+    },
+    "forethought-research": {
+      "x": 1335.9713282731982,
+      "y": 640.2642926654734
+    },
+    "ai-and-democracy-foundation": {
+      "x": 1049.889093329652,
+      "y": 393.34970909841
+    },
+    "odyssean-institute": {
+      "x": 985.2791669808987,
+      "y": 431.79252707315857
+    },
+    "ballotready": {
+      "x": 536.5438354110219,
+      "y": 817.2179366768784
+    },
+    "electomate": {
+      "x": 697.4836399780286,
+      "y": 775.3747896537113
+    },
+    "wahl-chat": {
+      "x": 669.3351439126767,
+      "y": 816.4745772234617
+    }
+  },
+  "labels": {}
+}

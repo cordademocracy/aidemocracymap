@@ -1,0 +1,21 @@
+name: OSV-Scanner
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # weekly, Monday 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  scan-scheduled:
+    permissions:
+      # No SARIF upload (upload-sarif: false below) — only read access needed.
+      contents: read
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@6e4298ebc4db23e847df9b2e2de2939d6f066c67 # v2.5.1
+    with:
+      # bun.lock + worker/package-lock.json; --config picks up osv-scanner.toml (triaged-finding ignores)
+      scan-args: |-
+        --config=./osv-scanner.toml
+        -r
+        ./
+      # SARIF upload needs GitHub Advanced Security on private repos; job failure is signal enough
+      upload-sarif: false

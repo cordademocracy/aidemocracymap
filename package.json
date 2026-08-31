@@ -1,0 +1,46 @@
+{
+  "name": "aisafety4democracymap",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "bun run paraglide && vite",
+    "build": "bun run paraglide && tsc -b && vite build",
+    "paraglide": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy baseLocale",
+    "preview": "vite preview",
+    "fetch-logos": "node scripts/fetch-logos.mjs",
+    "optimize-logos": "node scripts/optimize-logos.mjs",
+    "generate-og": "node scripts/generate-og.mjs"
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.2.7",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-router": "^7.18.3"
+  },
+  "overrides": {
+    "nanoid": "^3.3.16",
+    "postcss": "^8.5.26"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.1",
+    "@inlang/paraglide-js": "^2.25.0",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "rollup-plugin-visualizer": "^7.1.1",
+    "sharp": "^0.35.4",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.5.3",
+    "vite": "^8"
+  }
+}

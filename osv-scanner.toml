@@ -1,0 +1,2 @@
+# osv-scanner config: triaged-finding ignores for the scheduled scan (.github/workflows/osv-scanner.yml).
+# Add entries as findings are triaged; see https://google.github.io/osv-scanner/configuration/

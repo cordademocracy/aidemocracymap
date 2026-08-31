@@ -1,0 +1,45 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ai4democracy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-30",
+  "assets": {
+    "directory": "../dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "routes": [
+    { "pattern": "ai4democracy.world", "custom_domain": true }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ai4democracy",
+      "database_id": "01fb818b-2683-4a96-9b98-8ccc731e7c40"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "UPLOADS",
+      "id": "65aa24688739416083f74fe714df9196"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "DIGEST_EMAIL",
+      "destination_address": "baran@cordademocracy.org"
+    }
+  ],
+  "triggers": {
+    "crons": ["0 8 * * 6"]
+  },
+  "vars": {
+    "SITE_ORIGIN": "https://ai4democracy.world",
+    "TURNSTILE_HOSTNAMES": "ai4democracy.world",
+    "DIGEST_FROM": "digest@ai4democracy.world",
+    "DIGEST_TO": "baran@cordademocracy.org"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
