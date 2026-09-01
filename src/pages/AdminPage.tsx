@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import {
   ApiError,
@@ -9,6 +9,9 @@ import {
   adminResolve,
   adminResolveSubmission,
   adminSaveSubmissionDraft,
+  adminUpdateOrg,
+  fetchOrg,
+  fetchOrgs,
   isV2Org,
   type EditChanges,
   type EditStatus,
@@ -26,11 +29,13 @@ import {
   type Category,
   type DepthRing,
   type KeyProject,
+  type Organization,
   type OrgSummary,
   type RegionId,
 } from "../data/types";
 import { isValidHttpUrl } from "../lib/forms";
 import { uploadUrl } from "../lib/orgs";
+import { KeyProjectsField } from "../components/admin/KeyProjectsField";
 import { m } from "../paraglide/messages.js";
 
 const STATUSES: EditStatus[] = ["pending", "approved", "rejected"];
@@ -62,9 +67,11 @@ const FIELD_LABELS: Record<keyof EditChanges, () => string> = {
   aiDemocracyAngle: m["forms.fields.angle"],
   website: m["forms.fields.websiteUrl"],
   logoUpload: m["admin.fieldLabels.logoUpload"],
+  keyProjects: m["forms.fields.keyProjects"],
+  note: m["admin.contributorNote"],
 };
 
-type AdminTab = "edits" | "submissions";
+type AdminTab = "edits" | "submissions" | "orgs";
 
 /** Shown on a 401: mails a one-time sign-in link to the maintainer inbox. */
 function LoginPrompt() {
@@ -188,7 +195,7 @@ export function AdminPage() {
         </p>
       </div>
 
-      {/* top-level tabs: contributor edits vs. new-organization submissions */}
+      {/* top-level tabs: contributor edits, new-organization submissions, published orgs */}
       <div className="flex flex-wrap gap-5 mt-6 dashed-b pb-3">
         <TabButton active={tab === "edits"} onClick={() => setTab("edits")}>
           {m["admin.tabEdits"]()}
@@ -196,9 +203,14 @@ export function AdminPage() {
         <TabButton active={tab === "submissions"} onClick={() => setTab("submissions")}>
           {m["admin.tabSubmissions"]()}
         </TabButton>
+        <TabButton active={tab === "orgs"} onClick={() => setTab("orgs")}>
+          {m["admin.tabOrgs"]()}
+        </TabButton>
       </div>
 
-      {tab === "edits" ? (
+      {tab === "orgs" ? (
+        <OrgsTab describeError={describeError} needsLogin={needsLogin} />
+      ) : tab === "edits" ? (
         <>
           <div className="flex flex-wrap gap-2 mt-6">
             {STATUSES.map((s) => (
@@ -295,7 +307,8 @@ function EditCard({
   onResolve: (id: number, action: "approve" | "reject") => void;
   onReopen: (id: number) => void;
 }) {
-  const fields = Object.keys(edit.changes) as (keyof EditChanges)[];
+  // "note" is a message to the curator, not a proposed field value — shown separately
+  const fields = (Object.keys(edit.changes) as (keyof EditChanges)[]).filter((f) => f !== "note");
   return (
     <div className="corda-card p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -311,6 +324,18 @@ function EditCard({
       <p className="text-xs mt-2" style={{ color: "var(--ink-50)" }}>
         {contributorLine(edit)}
       </p>
+
+      {edit.changes.note && (
+        <p
+          className="text-sm mt-3 p-2.5 whitespace-pre-line break-words"
+          style={{ border: "1px dashed var(--dash)" }}
+        >
+          <span className="eyebrow eyebrow-meta block mb-1" style={{ color: "var(--ink-40)" }}>
+            {m["admin.contributorNote"]()}
+          </span>
+          {edit.changes.note}
+        </p>
+      )}
 
       <div className="mt-4 space-y-3">
         {fields.map((f) => (
@@ -366,20 +391,20 @@ function EditCard({
 }
 
 /** Render one before/after value: text for most fields, a thumbnail for a
- * proposed logo upload, or an em dash when empty. */
+ * proposed logo upload, a list for key projects, or an em dash when empty. */
 function FieldValue({
   field,
   value,
   accent,
 }: {
   field: keyof EditChanges;
-  value?: string;
+  value?: string | KeyProject[];
   accent: boolean;
 }) {
-  if (!value) {
+  if (!value || (Array.isArray(value) && value.length === 0)) {
     return <p className="text-sm mt-1" style={{ color: "var(--ink-40)" }}>—</p>;
   }
-  if (field === "logoUpload") {
+  if (field === "logoUpload" && typeof value === "string") {
     return (
       <img
         src={uploadUrl(value)}
@@ -389,12 +414,34 @@ function FieldValue({
       />
     );
   }
+  if (field === "keyProjects" && Array.isArray(value)) {
+    return (
+      <ul className="text-sm mt-1 space-y-0.5">
+        {value.map((p, i) => (
+          <li
+            key={i}
+            className="whitespace-pre-line break-words"
+            style={{ color: accent ? "var(--ink)" : "var(--ink-50)" }}
+          >
+            {p.name}
+            {p.url ? ` — ${p.url}` : ""}
+            {/* the note is published with the project, so it must be reviewable here */}
+            {p.note && (
+              <span className="block" style={{ color: "var(--ink-40)" }}>
+                {p.note}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    );
+  }
   return (
     <p
       className="text-sm mt-1 whitespace-pre-line break-words"
       style={{ color: accent ? "var(--ink)" : "var(--ink-50)" }}
     >
-      {value}
+      {value as string}
     </p>
   );
 }
@@ -617,6 +664,450 @@ function SubmissionsQueue({
         ))}
       </div>
     </>
+  );
+}
+
+// ---------- orgs tab (browse, search, edit any live organization) ----------
+
+/** Fields the admin may edit — mirrors worker/src/admin.ts's ORG_COLUMN keys.
+ * `slug` is deliberately absent: it is immutable, shown but never editable. */
+const ORG_EDIT_KEYS: (keyof Organization)[] = [
+  "name", "website", "tagline", "description", "aiDemocracyAngle", "location",
+  "logoDomain", "category", "region", "depthRing", "founded", "focusTags",
+  "funders", "keyProjects",
+];
+// mirrors the limits enforced by validateOrgUpdate in worker/src/validate.ts
+const ORG_TEXT_MAX = {
+  name: 120, website: 300, tagline: 200, description: 3000,
+  aiDemocracyAngle: 1000, location: 120, logoDomain: 120,
+  focusTag: 40, funder: 120,
+} as const;
+const MAX_KEY_PROJECTS = 6;
+
+function diffOrg(original: Organization, draft: Organization): Partial<Organization> {
+  const changes: Record<string, unknown> = {};
+  for (const key of ORG_EDIT_KEYS) {
+    if (JSON.stringify(draft[key]) !== JSON.stringify(original[key])) changes[key] = draft[key];
+  }
+  return changes as Partial<Organization>;
+}
+
+/** Browse/search/edit tab. A save here must be reflected in the list at once,
+ * so the list bypasses both useOrgs's module-cached promise and the HTTP cache. */
+function OrgsTab({
+  describeError,
+  needsLogin,
+}: {
+  describeError: (err: unknown) => string;
+  needsLogin: boolean;
+}) {
+  const [orgs, setOrgs] = useState<OrgSummary[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+
+  const loadOrgs = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setOrgs(await fetchOrgs(undefined, undefined, { noCache: true }));
+    } catch (err) {
+      setError(describeError(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [describeError]);
+
+  useEffect(() => {
+    void loadOrgs();
+  }, [loadOrgs]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = orgs ?? [];
+    const matched = q
+      ? list.filter((o) => [o.name, o.slug, o.tagline].some((v) => v.toLowerCase().includes(q)))
+      : list;
+    return [...matched].sort((a, b) => a.name.localeCompare(b.name));
+  }, [orgs, query]);
+
+  if (selectedSlug) {
+    return (
+      <OrgEditorPanel
+        slug={selectedSlug}
+        onClose={() => setSelectedSlug(null)}
+        onSaved={loadOrgs}
+        describeError={describeError}
+        needsLogin={needsLogin}
+      />
+    );
+  }
+
+  return (
+    <>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={m["admin.orgs.searchPlaceholder"]()}
+        className="corda-input w-full mt-6"
+      />
+
+      <p className="text-sm mt-4" style={{ color: "var(--ink-50)" }}>
+        {m["admin.orgs.count"]({ count: filtered.length })}
+      </p>
+
+      {error && (
+        <>
+          <p className="mt-4 text-sm" style={{ color: "var(--accent-warm)" }}>
+            {error}
+          </p>
+          {needsLogin && <LoginPrompt />}
+        </>
+      )}
+      {loading && (
+        <p className="mt-4 text-sm" style={{ color: "var(--ink-50)" }}>
+          {m["admin.loading"]()}
+        </p>
+      )}
+      {!loading && !filtered.length && !error && (
+        <p className="mt-16 text-center" style={{ color: "var(--ink-50)" }}>
+          {m["admin.orgs.noResults"]()}
+        </p>
+      )}
+
+      <div className="mt-6 space-y-2">
+        {filtered.map((o) => {
+          const region = REGION_BY_ID[o.region];
+          return (
+            <button
+              key={o.slug}
+              type="button"
+              onClick={() => setSelectedSlug(o.slug)}
+              className="corda-card w-full text-left p-4 flex flex-wrap items-center justify-between gap-2"
+              style={{ cursor: "pointer" }}
+            >
+              <div>
+                <p className="font-bold text-sm leading-tight">{o.name}</p>
+                <p className="eyebrow eyebrow-meta mt-1">{o.slug}</p>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {region && <span className="corda-tag">{region.name}</span>}
+                <span className="corda-tag">{DEPTH_LABELS[o.depthRing]}</span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+/** Loads the full record for the selected slug, then hands it to OrgEditor. */
+function OrgEditorPanel({
+  slug,
+  onClose,
+  onSaved,
+  describeError,
+  needsLogin,
+}: {
+  slug: string;
+  onClose: () => void;
+  onSaved: () => void;
+  describeError: (err: unknown) => string;
+  needsLogin: boolean;
+}) {
+  const [org, setOrg] = useState<Organization | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    fetchOrg(slug)
+      .then((data) => {
+        if (!cancelled) setOrg(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(describeError(err));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, describeError]);
+
+  return (
+    <>
+      <button type="button" onClick={onClose} className="btn-corda mt-6">
+        {m["admin.orgs.backToList"]()}
+      </button>
+
+      {loading && (
+        <p className="mt-4 text-sm" style={{ color: "var(--ink-50)" }}>
+          {m["admin.loading"]()}
+        </p>
+      )}
+      {error && (
+        <>
+          <p className="mt-4 text-sm" style={{ color: "var(--accent-warm)" }}>
+            {error}
+          </p>
+          {needsLogin && <LoginPrompt />}
+        </>
+      )}
+      {org && (
+        <OrgEditor
+          key={org.slug}
+          org={org}
+          onSaved={(updated) => {
+            setOrg(updated);
+            onSaved();
+          }}
+          describeError={describeError}
+        />
+      )}
+    </>
+  );
+}
+
+/** The edit form: every ORG_COLUMN field plus KeyProjectsField. Save sends
+ * only the fields that differ from the record as loaded. */
+function OrgEditor({
+  org,
+  onSaved,
+  describeError,
+}: {
+  org: Organization;
+  onSaved: (updated: Organization) => void;
+  describeError: (err: unknown) => string;
+}) {
+  const [draft, setDraft] = useState<Organization>(org);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  function set<K extends keyof Organization>(key: K, value: Organization[K]) {
+    setDraft((cur) => ({ ...cur, [key]: value }));
+    setSaved(false);
+  }
+
+  const changes = useMemo(() => diffOrg(org, draft), [org, draft]);
+  const dirty = Object.keys(changes).length > 0;
+
+  async function save() {
+    if (!dirty) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await adminUpdateOrg(org.slug, changes);
+      setSaved(true);
+      onSaved(draft);
+    } catch (err) {
+      setError(describeError(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="corda-card p-5 mt-4">
+      <div className="flex items-baseline justify-between gap-2 dashed-b pb-3">
+        <div>
+          <h3 className="font-bold text-base leading-[normal]">{draft.name}</h3>
+          <p className="eyebrow eyebrow-meta mt-1">{org.slug}</p>
+        </div>
+        <Link
+          to={`/org/${org.slug}`}
+          target="_blank"
+          rel="noreferrer"
+          className="text-xs underline underline-offset-2"
+          style={{ color: "var(--ink-50)" }}
+        >
+          /org/{org.slug}
+        </Link>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3 mt-4">
+        <DraftField label={m["forms.fields.name"]()} required>
+          <input
+            value={draft.name}
+            onChange={(e) => set("name", e.target.value)}
+            maxLength={ORG_TEXT_MAX.name}
+            className="corda-input w-full mt-1.5"
+          />
+        </DraftField>
+        <DraftField label={m["forms.fields.website"]()} required>
+          <input
+            value={draft.website}
+            onChange={(e) => set("website", e.target.value)}
+            maxLength={ORG_TEXT_MAX.website}
+            className="corda-input w-full mt-1.5"
+            inputMode="url"
+          />
+        </DraftField>
+        <DraftField label={m["forms.fields.category"]()} required>
+          <select
+            value={draft.category}
+            onChange={(e) => set("category", e.target.value as Category)}
+            className="corda-input w-full mt-1.5"
+          >
+            {CATEGORY_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </DraftField>
+        <DraftField label={m["common.district"]()} required>
+          <select
+            value={draft.region}
+            onChange={(e) => set("region", e.target.value as RegionId)}
+            className="corda-input w-full mt-1.5"
+          >
+            {REGIONS.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </DraftField>
+        <DraftField label={m["forms.fields.depthRing"]()}>
+          <select
+            value={draft.depthRing}
+            onChange={(e) => set("depthRing", e.target.value as DepthRing)}
+            className="corda-input w-full mt-1.5"
+          >
+            {DEPTH_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </DraftField>
+        <DraftField label={m["forms.fields.founded"]()}>
+          <input
+            value={draft.founded ?? ""}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^\d]/g, "").slice(0, 4);
+              set("founded", digits ? Number(digits) : null);
+            }}
+            className="corda-input w-full mt-1.5"
+            inputMode="numeric"
+          />
+        </DraftField>
+        <DraftField label={m["forms.fields.location"]()}>
+          <input
+            value={draft.location}
+            onChange={(e) => set("location", e.target.value)}
+            maxLength={ORG_TEXT_MAX.location}
+            className="corda-input w-full mt-1.5"
+          />
+        </DraftField>
+        <DraftField label={m["forms.fields.logoDomain"]()}>
+          <input
+            value={draft.logoDomain}
+            onChange={(e) => set("logoDomain", e.target.value)}
+            maxLength={ORG_TEXT_MAX.logoDomain}
+            className="corda-input w-full mt-1.5"
+          />
+        </DraftField>
+        <div className="sm:col-span-2">
+          <DraftField label={m["forms.fields.tagline"]()} required>
+            <textarea
+              value={draft.tagline}
+              onChange={(e) => set("tagline", e.target.value)}
+              maxLength={ORG_TEXT_MAX.tagline}
+              rows={2}
+              className="corda-textarea mt-1.5"
+            />
+          </DraftField>
+        </div>
+        <div className="sm:col-span-2">
+          <DraftField label={m["forms.fields.description"]()} required>
+            <textarea
+              value={draft.description}
+              onChange={(e) => set("description", e.target.value)}
+              maxLength={ORG_TEXT_MAX.description}
+              rows={5}
+              className="corda-textarea mt-1.5"
+            />
+          </DraftField>
+        </div>
+        <div className="sm:col-span-2">
+          <DraftField label={m["forms.fields.angle"]()}>
+            <textarea
+              value={draft.aiDemocracyAngle}
+              onChange={(e) => set("aiDemocracyAngle", e.target.value)}
+              maxLength={ORG_TEXT_MAX.aiDemocracyAngle}
+              rows={3}
+              className="corda-textarea mt-1.5"
+            />
+          </DraftField>
+        </div>
+        <div className="sm:col-span-2">
+          <DraftField label={m["forms.fields.focusTags"]()}>
+            <TagEditor
+              values={draft.focusTags}
+              onChange={(v) => set("focusTags", v)}
+              max={MAX_TAGS}
+              itemMax={ORG_TEXT_MAX.focusTag}
+            />
+          </DraftField>
+        </div>
+        <div className="sm:col-span-2">
+          <DraftField label={m["forms.fields.funders"]()}>
+            <TagEditor
+              values={draft.funders}
+              onChange={(v) => set("funders", v)}
+              itemMax={ORG_TEXT_MAX.funder}
+            />
+          </DraftField>
+        </div>
+        <div className="sm:col-span-2">
+          <KeyProjectsField
+            value={draft.keyProjects}
+            onChange={(v) => set("keyProjects", v)}
+            max={MAX_KEY_PROJECTS}
+          />
+        </div>
+      </div>
+
+      {error && (
+        <p
+          className="text-sm px-3 py-2 mt-3"
+          style={{ color: "var(--accent-warm)", border: "1px dashed var(--accent-warm)" }}
+        >
+          {error}
+        </p>
+      )}
+      {!error && saved && (
+        <p className="mt-3 text-sm" style={{ color: "var(--ink-70)" }}>
+          {m["admin.published"]()}{" "}
+          <Link
+            to={`/org/${org.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2"
+          >
+            /org/{org.slug}
+          </Link>
+        </p>
+      )}
+
+      <button
+        type="button"
+        disabled={saving || !dirty}
+        onClick={() => void save()}
+        className="btn-corda-primary mt-4"
+        style={saving || !dirty ? { opacity: 0.5 } : undefined}
+      >
+        {saving ? m["admin.draft.saving"]() : m["admin.orgs.save"]()}
+      </button>
+    </div>
   );
 }
 

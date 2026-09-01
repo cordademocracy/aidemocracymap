@@ -115,9 +115,20 @@
   "forms.fields.location": "Location",
   "forms.fields.funders": "Funders",
   "forms.fields.keyProjects": "Key projects",
+  "forms.fields.focusTags": "Focus tags",
+  "forms.fields.logoDomain": "Logo domain",
   "forms.fields.yourName": "Your name",
   "forms.fields.email": "Email",
   "forms.fields.yourEmail": "Your email",
+  "forms.fields.note": "Note to the curator",
+
+  "forms.keyProjects.label": "Key projects",
+  "forms.keyProjects.name": "Project name",
+  "forms.keyProjects.url": "Project URL",
+  "forms.keyProjects.note": "Note",
+  "forms.keyProjects.addRow": "+ Add project",
+  "forms.keyProjects.removeRow": "Remove {name}",
+  "forms.keyProjects.untitled": "Untitled project {n}",
 
   "forms.addOrg.title": "Add an organization",
   "forms.addOrg.heading": "Propose a new entry",
@@ -141,6 +152,7 @@
   "forms.suggestEdit.logoHint": "PNG, JPEG or WebP, up to 1 MB. Leave empty to keep the current logo.",
   "forms.suggestEdit.noChanges": "Edit at least one field before submitting.",
   "forms.suggestEdit.fallbackError": "Please shorten your text and try again.",
+  "forms.suggestEdit.noteHint": "Seen by the reviewer only — never published on the org's page.",
 
   "forms.logoPicker.choose": "Choose image",
   "forms.logoPicker.change": "Change image",
@@ -158,10 +170,26 @@
   "admin.queueHeading": "Review queue",
   "admin.tabEdits": "Edits",
   "admin.tabSubmissions": "New organizations",
+  "admin.tabOrgs": "Organizations",
+  "admin.orgs.searchPlaceholder": "Search by name, slug or tagline…",
+  "admin.orgs.noResults": "No organizations match your search.",
+  "admin.orgs.backToList": "Back to list",
+  "admin.orgs.save": "Save changes",
+  "admin.orgs.count": [
+    {
+      "declarations": ["input count", "local countPlural = count: plural"],
+      "selectors": ["countPlural"],
+      "match": {
+        "countPlural=one": "{count} organization",
+        "countPlural=other": "{count} organizations"
+      }
+    }
+  ],
   "admin.status.pending": "Pending",
   "admin.status.approved": "Approved",
   "admin.status.rejected": "Rejected",
   "admin.fieldLabels.logoUpload": "Replacement logo",
+  "admin.contributorNote": "Note from contributor",
   "admin.empty.pending": "Nothing pending.",
   "admin.empty.approved": "Nothing approved.",
   "admin.empty.rejected": "Nothing rejected.",

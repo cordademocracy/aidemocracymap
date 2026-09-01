@@ -49,7 +49,7 @@ export async function createEdit(req: Request, env: Env): Promise<Response> {
   if (!globalOk) return json({ detail: "too many edits today, try again tomorrow" }, 429);
 
   const logoUpload = v.value.changes.logoUpload;
-  if (logoUpload !== undefined && !(await uploadExists(env, logoUpload))) {
+  if (typeof logoUpload === "string" && !(await uploadExists(env, logoUpload))) {
     return json({ detail: "logoUpload does not reference an existing upload" }, 422);
   }
 

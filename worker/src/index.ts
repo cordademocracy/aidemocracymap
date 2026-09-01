@@ -7,6 +7,7 @@ import {
   rejectSubmission,
   reopen,
   saveSubmissionDraft,
+  updateOrg,
 } from "./admin";
 import { consumeLoginLink, requestLoginLink } from "./adminAuth";
 import { getMeta, runDigest } from "./digest";
@@ -21,6 +22,7 @@ import { createUpload, serveUpload } from "./uploads";
 const UPLOAD_ROUTE = /^\/api\/uploads\/([A-Za-z0-9_.-]+)$/;
 const ADMIN_SUBMISSION_ACTION = /^\/api\/admin\/submissions\/(\d+)\/(draft|approve|reject|reopen)$/;
 const ADMIN_EDIT_ACTION = /^\/api\/admin\/edits\/(\d+)\/(approve|reject|reopen)$/;
+const ADMIN_ORG = /^\/api\/admin\/orgs\/([a-z0-9-]+)$/;
 
 async function handle(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
@@ -79,6 +81,9 @@ async function handle(req: Request, env: Env): Promise<Response> {
     return rejectEdit(req, env, id);
   }
 
+  const orgMatchAdmin = path.match(ADMIN_ORG);
+  if (method === "PUT" && orgMatchAdmin) return updateOrg(req, env, orgMatchAdmin[1]!);
+
   return json({ detail: "not found" }, 404);
 }
 
@@ -91,7 +96,7 @@ function corsHeaders(req: Request): Record<string, string> | null {
   if (origin === null || !DEV_ORIGIN.test(origin)) return null;
   return {
     "access-control-allow-origin": origin,
-    "access-control-allow-methods": "GET, POST, OPTIONS",
+    "access-control-allow-methods": "GET, POST, PUT, OPTIONS",
     "access-control-allow-headers": "content-type",
     "access-control-max-age": "86400",
     vary: "Origin",

@@ -29,6 +29,8 @@ export type EditStatus = "pending" | "approved" | "rejected";
  * The full set of fields an edit may carry. Beyond the three free-text fields
  * (v1), v1.1 adds `website` (an absolute http(s) URL) and `logoUpload` (an
  * upload id from POST /api/uploads, applied to the org's logoUrl on approve).
+ * `keyProjects` follows the same rules as a full org draft. `note` is a
+ * message to the curator — it is never published to the org's page.
  */
 export interface EditChanges {
   tagline?: string;
@@ -36,6 +38,8 @@ export interface EditChanges {
   aiDemocracyAngle?: string;
   website?: string;
   logoUpload?: string;
+  keyProjects?: KeyProject[];
+  note?: string;
 }
 
 /** An edit as returned by the admin endpoint (with before/after values). */
@@ -222,10 +226,16 @@ const MIN_ORGS = 100;
 
 /** Live dataset, with the bundled snapshot as the offline fallback: the map
  * must render when the API is unreachable or answers with a partial dataset. */
-export async function fetchOrgs(q?: string, category?: string): Promise<OrgSummary[]> {
+export async function fetchOrgs(
+  q?: string,
+  category?: string,
+  opts?: { noCache?: boolean },
+): Promise<OrgSummary[]> {
   let all: OrgSummary[];
   try {
-    const live = await request<OrgSummary[]>("/orgs");
+    // GET /api/orgs is max-age=60; noCache is required wherever a just-saved edit must show up.
+    const init = opts?.noCache ? { cache: "no-store" as RequestCache } : undefined;
+    const live = await request<OrgSummary[]>("/orgs", init);
     all = live.length < MIN_ORGS ? ORGS.map(toSummary) : live;
   } catch {
     all = ORGS.map(toSummary);
@@ -233,9 +243,11 @@ export async function fetchOrgs(q?: string, category?: string): Promise<OrgSumma
   return searchOrgs(all, q ?? "", category as Category | undefined);
 }
 
-export async function fetchOrg(slug: string): Promise<Organization> {
+export async function fetchOrg(slug: string, opts?: { noCache?: boolean }): Promise<Organization> {
   try {
-    return await request<Organization>(`/orgs/${slug}`);
+    // GET /api/orgs/:slug is max-age=60; noCache is required wherever a stale value would mislead.
+    const init = opts?.noCache ? { cache: "no-store" as RequestCache } : undefined;
+    return await request<Organization>(`/orgs/${slug}`, init);
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) throw err;
     const org = ORGS.find((o) => o.slug === slug);
@@ -259,8 +271,8 @@ export function adminRequestLoginLink(): Promise<{ ok: boolean }> {
   return request<{ ok: boolean }>("/admin/login", { method: "POST" });
 }
 
-/** Wire shape of GET /api/admin/edits — the Worker holds no org data, so
- * `orgName` and `current` are resolved here from the baked dataset. */
+/** Wire shape of GET /api/admin/edits — the endpoint returns the edit rows only,
+ * so `orgName` and `current` are resolved here against the live org. */
 type EditSuggestionRow = Omit<EditSuggestion, "orgName" | "current">;
 
 function currentValues(org: Organization | undefined): EditChanges {
@@ -270,14 +282,26 @@ function currentValues(org: Organization | undefined): EditChanges {
     description: org.description,
     aiDemocracyAngle: org.aiDemocracyAngle,
     website: org.website,
+    keyProjects: org.keyProjects,
   };
 }
 
-/** GET /api/admin/edits?status= — admin-only (session cookie). */
+/** GET /api/admin/edits?status= — admin-only (session cookie). The diff is only
+ * meaningful against what is published right now, so each org is read live. */
 export async function adminListEdits(status: EditStatus): Promise<EditSuggestion[]> {
   const rows = await request<EditSuggestionRow[]>(`/admin/edits${qs({ status })}`);
+  const orgs = new Map<string, Organization>();
+  await Promise.all(
+    [...new Set(rows.map((r) => r.orgSlug))].map(async (slug) => {
+      try {
+        orgs.set(slug, await fetchOrg(slug, { noCache: true }));
+      } catch {
+        /* org gone or unreachable — the diff falls back to the slug and empty values */
+      }
+    }),
+  );
   return rows.map((row) => {
-    const org = ORGS.find((o) => o.slug === row.orgSlug);
+    const org = orgs.get(row.orgSlug);
     return { ...row, orgName: org?.name ?? row.orgSlug, current: currentValues(org) };
   });
 }
@@ -352,4 +376,17 @@ export function adminReopen(
   id: number
 ): Promise<{ ok: boolean }> {
   return request<{ ok: boolean }>(`/admin/${table}/${id}/reopen`, { method: "POST" });
+}
+
+/** PUT /api/admin/orgs/{slug} — update any subset of ORG_COLUMN fields on a
+ * live org. `changes` should carry only the fields that actually changed. */
+export async function adminUpdateOrg(
+  slug: string,
+  changes: Partial<Organization>,
+): Promise<{ ok: boolean; slug: string }> {
+  return request(`/admin/orgs/${slug}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(changes),
+  });
 }

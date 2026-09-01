@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { Organization } from "../data/types";
+import type { KeyProject, Organization } from "../data/types";
 import { submitEdit, uploadImage, type EditableField, type EditChanges } from "../lib/api";
 import {
   isExpiredTokenError,
@@ -14,6 +14,7 @@ import { logoSrc } from "../lib/orgs";
 import { m } from "../paraglide/messages.js";
 import { HoneypotField } from "./HoneypotField";
 import { LogoPicker } from "./LogoPicker";
+import { KeyProjectsField } from "./admin/KeyProjectsField";
 
 const LIMITS: Record<EditableField, number> = {
   tagline: 200,
@@ -21,6 +22,19 @@ const LIMITS: Record<EditableField, number> = {
   aiDemocracyAngle: 1000,
 };
 const WEBSITE_LIMIT = 300;
+const NOTE_LIMIT = 1000;
+// mirrors MAX_KEY_PROJECTS in worker/src/validate.ts
+const MAX_KEY_PROJECTS = 6;
+
+function keyProjectsEqual(a: KeyProject[], b: KeyProject[]): boolean {
+  return (
+    a.length === b.length &&
+    a.every((p, i) => {
+      const q = b[i]!;
+      return p.name === q.name && (p.url ?? "") === (q.url ?? "") && (p.note ?? "") === (q.note ?? "");
+    })
+  );
+}
 
 /** Modal that lets an invited contributor propose edits to the three
  * free-text org fields. Only changed fields are sent; at least one is required. */
@@ -36,6 +50,8 @@ export function SuggestEditPanel({
   const [angle, setAngle] = useState(org.aiDemocracyAngle);
   const [website, setWebsite] = useState(org.website);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [keyProjects, setKeyProjects] = useState<KeyProject[]>(org.keyProjects);
+  const [note, setNote] = useState("");
   const [touched, setTouched] = useState<ReadonlySet<EditableField>>(new Set());
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -53,6 +69,7 @@ export function SuggestEditPanel({
   const nameId = useId();
   const emailId = useId();
   const logoId = useId();
+  const noteId = useId();
   const taglineRef = useRef<HTMLTextAreaElement>(null);
   const doneRef = useRef<HTMLParagraphElement>(null);
 
@@ -63,8 +80,14 @@ export function SuggestEditPanel({
   };
   const textChanges = collectChanges(org, values);
   const websiteChanged = website.trim() !== "" && website.trim() !== org.website.trim();
+  const keyProjectsChanged = !keyProjectsEqual(keyProjects, org.keyProjects);
+  const noteAdded = note.trim() !== "";
   const changeCount =
-    Object.keys(textChanges).length + (websiteChanged ? 1 : 0) + (logoFile ? 1 : 0);
+    Object.keys(textChanges).length +
+    (websiteChanged ? 1 : 0) +
+    (logoFile ? 1 : 0) +
+    (keyProjectsChanged ? 1 : 0) +
+    (noteAdded ? 1 : 0);
   // a blanked field is dropped from changeCount but still lost work
   const dirty =
     changeCount > 0 ||
@@ -99,6 +122,8 @@ export function SuggestEditPanel({
   async function post(formToken: string) {
     const changes: EditChanges = { ...textChanges };
     if (websiteChanged) changes.website = website.trim();
+    if (keyProjectsChanged) changes.keyProjects = keyProjects;
+    if (noteAdded) changes.note = note.trim();
     // upload the replacement logo FIRST (same form token) so an oversized
     // or unsupported image fails before the edit is filed
     if (logoFile) {
@@ -268,6 +293,34 @@ export function SuggestEditPanel({
               file={logoFile}
               onFile={setLogoFile}
               fallbackSrc={logoSrc(org)}
+            />
+          </div>
+
+          <KeyProjectsField value={keyProjects} onChange={setKeyProjects} max={MAX_KEY_PROJECTS} />
+
+          <div>
+            <div className="flex items-baseline justify-between gap-2">
+              <label htmlFor={noteId} className="eyebrow">
+                {m["forms.fields.note"]()}
+              </label>
+              <span
+                className="eyebrow"
+                style={{ color: note.length >= NOTE_LIMIT ? "var(--accent-warm)" : "var(--ink-50)" }}
+              >
+                {note.length} / {NOTE_LIMIT}
+              </span>
+            </div>
+            <p className="text-xs mt-1 mb-1.5" style={{ color: "var(--ink-50)" }}>
+              {m["forms.suggestEdit.noteHint"]()}
+            </p>
+            <textarea
+              id={noteId}
+              className="corda-textarea mt-1.5"
+              rows={2}
+              maxLength={NOTE_LIMIT}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder={m["common.optional"]()}
             />
           </div>
 

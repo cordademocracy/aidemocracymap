@@ -19,6 +19,8 @@ export const REGION_IDS = [
   "backsliding-bay",
 ] as const;
 
+export const DEPTH_RING_VALUES = ["core", "adjacent", "broad"] as const;
+
 export const UPLOAD_NAME_RE = /^u_[0-9a-f]{24}\.(png|jpeg|webp)$/;
 export const ORG_SLUG_RE = /^[a-z0-9-]{1,80}$/;
 
@@ -97,9 +99,17 @@ const EDIT_TEXT_LIMITS: Record<string, number> = {
   aiDemocracyAngle: 1000,
 };
 
+export const ACCEPTED_EDIT_KEYS = new Set([
+  ...Object.keys(EDIT_TEXT_LIMITS),
+  "website",
+  "logoUpload",
+  "note",
+  "keyProjects",
+]);
+
 export interface EditPayload {
   orgSlug: string;
-  changes: Record<string, string>;
+  changes: Record<string, string | KeyProject[]>;
   contributorName: string | null;
   contributorEmail: string | null;
   companyUrl: string;
@@ -115,8 +125,15 @@ export function validateEdit(body: unknown): Validation<EditPayload> {
   if (typeof b.changes !== "object" || b.changes === null || Array.isArray(b.changes)) {
     return invalid("changes must be an object");
   }
-  const changes: Record<string, string> = {};
+  const changes: Record<string, string | KeyProject[]> = {};
   for (const [key, raw] of Object.entries(b.changes as Record<string, unknown>)) {
+    if (key === "keyProjects") {
+      const projects = validateKeyProjects(raw);
+      if (!projects.ok) return invalid(`changes.${projects.detail}`);
+      changes[key] = projects.value;
+      continue;
+    }
+    if (!ACCEPTED_EDIT_KEYS.has(key)) return invalid(`unknown changes field: ${key}`);
     if (typeof raw !== "string") return invalid(`changes.${key} must be a string`);
     const value = raw.trim();
     if (key in EDIT_TEXT_LIMITS) {
@@ -128,8 +145,10 @@ export function validateEdit(body: unknown): Validation<EditPayload> {
       }
     } else if (key === "logoUpload") {
       if (!UPLOAD_NAME_RE.test(value)) return invalid("changes.logoUpload has an invalid format");
-    } else {
-      return invalid(`unknown changes field: ${key}`);
+    } else if (key === "note") {
+      // the contributor's message to the curator, never published — must never be added to
+      // admin.ts's COLUMN map. Unrelated to KeyProject.note, which is published by design.
+      if (value.length > 1000) return invalid("changes.note max 1000 chars");
     }
     changes[key] = value;
   }
@@ -221,7 +240,7 @@ export function validateDraft(body: unknown): Validation<OrgDraft> {
   const logoUpload = optStr(b.logoUpload);
   if (logoUpload && !UPLOAD_NAME_RE.test(logoUpload)) return invalid("logoUpload has an invalid format");
   const depthRing = optStr(b.depthRing) || "core";
-  if (!["core", "adjacent", "broad"].includes(depthRing)) return invalid("invalid depthRing");
+  if (!(DEPTH_RING_VALUES as readonly string[]).includes(depthRing)) return invalid("invalid depthRing");
   const fundersRaw = b.funders ?? [];
   if (!Array.isArray(fundersRaw)) return invalid("funders must be an array");
   const funders: string[] = [];
@@ -266,4 +285,100 @@ export function validateDraft(body: unknown): Validation<OrgDraft> {
   if (founded !== undefined) value.founded = founded;
   if (logoUpload) value.logoUpload = logoUpload;
   return { ok: true, value };
+}
+
+const ORG_TEXT_LIMITS: Record<string, number> = {
+  name: 120, tagline: 200, description: 3000,
+  aiDemocracyAngle: 1000, location: 120, logoDomain: 120,
+};
+
+/** Blanking any of these would publish an unusable org page. */
+const ORG_REQUIRED_TEXT = new Set(["name", "tagline", "description"]);
+
+export function validateOrgUpdate(body: unknown): { ok: true; value: Record<string, unknown> } | { ok: false; detail: string } {
+  if (typeof body !== "object" || body === null) return { ok: false, detail: "body must be an object" };
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
+    if (key === "website") {
+      if (typeof value !== "string") return { ok: false, detail: "website must be a string" };
+      const website = value.trim();
+      if (website.length > 300 || !isHttpUrl(website)) {
+        return { ok: false, detail: "website must be an absolute http(s) URL, max 300 chars" };
+      }
+      out[key] = website;
+    } else if (key in ORG_TEXT_LIMITS) {
+      if (typeof value !== "string") return { ok: false, detail: `${key} must be a string` };
+      const text = value.trim();
+      const max = ORG_TEXT_LIMITS[key]!;
+      if (text.length > max) return { ok: false, detail: `${key} max ${max} chars` };
+      if (!text && ORG_REQUIRED_TEXT.has(key)) return { ok: false, detail: `${key} must not be empty` };
+      out[key] = text;
+    } else if (key === "category" || key === "region" || key === "depthRing") {
+      const allowed = key === "category" ? CATEGORY_VALUES : key === "region" ? REGION_IDS : DEPTH_RING_VALUES;
+      if (typeof value !== "string" || !(allowed as readonly string[]).includes(value)) {
+        return { ok: false, detail: `invalid ${key}` };
+      }
+      out[key] = value;
+    } else if (key === "founded") {
+      if (value !== null && (typeof value !== "number" || !Number.isInteger(value) || value < 1800 || value > 2100))
+        return { ok: false, detail: "founded must be a year between 1800 and 2100" };
+      out[key] = value;
+    } else if (key === "focusTags") {
+      if (!Array.isArray(value) || value.length > 6) return { ok: false, detail: "focusTags max 6 entries" };
+      const tags = value.map((v) => (typeof v === "string" ? v.trim() : v));
+      if (tags.some((v) => typeof v !== "string" || !v || v.length > 40))
+        return { ok: false, detail: "each focus tag must be 1-40 chars" };
+      out[key] = tags;
+    } else if (key === "funders") {
+      if (!Array.isArray(value)) return { ok: false, detail: "funders must be an array" };
+      const funders = value.map((v) => (typeof v === "string" ? v.trim() : v));
+      if (funders.some((v) => typeof v !== "string" || !v || v.length > 120))
+        return { ok: false, detail: "each funder must be 1-120 chars" };
+      out[key] = funders;
+    } else if (key === "keyProjects") {
+      const projects = validateKeyProjects(value);
+      if (!projects.ok) return { ok: false, detail: projects.detail };
+      out[key] = projects.value;
+    } else {
+      return { ok: false, detail: `unknown field: ${key}` };
+    }
+  }
+  if (Object.keys(out).length === 0) return { ok: false, detail: "no fields to update" };
+  return { ok: true, value: out };
+}
+
+export const MAX_KEY_PROJECTS = 6;
+
+/** https only: an approved suggestion publishes instantly, so a javascript: or
+ * data: URL would reach the live page. */
+export function validateKeyProjects(value: unknown): Validation<KeyProject[]> {
+  if (!Array.isArray(value)) return invalid("keyProjects must be an array");
+  if (value.length > MAX_KEY_PROJECTS) {
+    return invalid(`keyProjects max ${MAX_KEY_PROJECTS} entries`);
+  }
+  const out: KeyProject[] = [];
+  for (const item of value) {
+    if (typeof item !== "object" || item === null) return invalid("each key project must be an object");
+    const { name, url, note } = item as Record<string, unknown>;
+    if (typeof name !== "string" || name.trim() === "" || name.length > 120) {
+      return invalid("each key project needs a name, max 120 chars");
+    }
+    const entry: KeyProject = { name: name.trim() };
+    if (url !== undefined && url !== null && url !== "") {
+      if (typeof url !== "string") return invalid("key project url must be a string");
+      const trimmed = url.trim();
+      if (trimmed.length > 300) return invalid("key project url max 300 chars");
+      let parsed: URL;
+      try { parsed = new URL(trimmed); } catch { return invalid("key project url must be an absolute https URL"); }
+      if (parsed.protocol !== "https:") return invalid("key project url must be an absolute https URL");
+      entry.url = trimmed;
+    }
+    if (note !== undefined && note !== null && note !== "") {
+      if (typeof note !== "string" || note.length > 300) return invalid("key project note max 300 chars");
+      const trimmed = note.trim();
+      if (trimmed !== "") entry.note = trimmed;
+    }
+    out.push(entry);
+  }
+  return { ok: true, value: out };
 }

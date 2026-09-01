@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { APPLIED_EDIT_KEYS } from "../src/admin";
 import { LIMITS, ipHash } from "../src/rateLimit";
+import { ACCEPTED_EDIT_KEYS } from "../src/validate";
 import {
+  adminEnv,
   apiRequest,
   countRows,
   dispatch,
   editBody,
+  insertEdit,
   makeToken,
   mockTurnstile,
   seedCounter,
+  seedOrg,
   testEnv,
 } from "./helpers";
 
@@ -99,6 +104,60 @@ describe("POST /api/edits", () => {
       await dispatch(post(await editBody({ companyUrl: "spam" })));
     }
     expect((await dispatch(post(await editBody()))).status).toBe(201);
+  });
+
+  it("accepts key projects and a note on an edit suggestion", async () => {
+    const body = await editBody({
+      changes: { keyProjects: [{ name: "Checks", url: "https://example.org" }], note: "second link" },
+    });
+    const res = await dispatch(apiRequest("/api/edits", { method: "POST", body }));
+    expect(res.status).toBe(201);
+  });
+
+  it("carries the per-project note into the admin queue so the diff can show it", async () => {
+    const env = adminEnv();
+    await seedOrg({ slug: "wahl-chat" });
+    const body = await editBody({
+      changes: { keyProjects: [{ name: "Checks", url: "https://example.org", note: "why it matters" }] },
+    });
+    expect((await dispatch(post(body))).status).toBe(201);
+    const rows = (await (await dispatch(apiRequest("/api/admin/edits"), env)).json()) as {
+      changes: { keyProjects: { note?: string }[] };
+    }[];
+    expect(rows[0]!.changes.keyProjects[0]!.note).toBe("why it matters");
+  });
+
+  it("rejects a non-https key project url", async () => {
+    const body = await editBody({ changes: { keyProjects: [{ name: "x", url: "http://example.org" }] } });
+    expect((await dispatch(apiRequest("/api/edits", { method: "POST", body }))).status).toBe(422);
+  });
+
+  it("applies approved key projects to the org row but never the note", async () => {
+    const env = adminEnv();
+    await seedOrg({ slug: "gamma" });
+    const id = await insertEdit("gamma");
+    await env.DB.prepare("UPDATE edits SET changes = ?1 WHERE id = ?2")
+      .bind(JSON.stringify({ keyProjects: [{ name: "Checks", url: "https://example.org" }], note: "hi" }), id)
+      .run();
+    expect(
+      (await dispatch(apiRequest(`/api/admin/edits/${id}/approve`, { method: "POST" }), env)).status,
+    ).toBe(200);
+    const org = (await (await dispatch(apiRequest("/api/orgs/gamma"), env)).json()) as {
+      keyProjects: { name: string }[];
+      description: string;
+    };
+    expect(org.keyProjects[0]!.name).toBe("Checks");
+    expect(org.description).not.toContain("hi");
+  });
+});
+
+describe("edit field-set consistency", () => {
+  it("every accepted edit key is either applied or explicitly curator-only", () => {
+    const CURATOR_ONLY = new Set(["note"]);
+    for (const key of ACCEPTED_EDIT_KEYS) {
+      if (CURATOR_ONLY.has(key)) continue;
+      expect(APPLIED_EDIT_KEYS.has(key), `${key} is accepted but never applied`).toBe(true);
+    }
   });
 });
 

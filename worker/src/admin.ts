@@ -3,9 +3,20 @@ import { bumpOrgsVersion } from "./orgs";
 import { LIMITS, hit, ipHash } from "./rateLimit";
 import { clientIp, json, type Env } from "./types";
 import { uploadExists } from "./uploads";
-import { validateDraft } from "./validate";
+import { validateDraft, validateKeyProjects, validateOrgUpdate } from "./validate";
 
 const STATUSES = ["pending", "approved", "rejected"] as const;
+
+// allow-list stops arbitrary keys in `changes` from reaching SQL as column names;
+// `note` is curator-facing only and must never be added here
+const COLUMN: Record<string, string> = {
+  tagline: "tagline",
+  description: "description",
+  aiDemocracyAngle: "ai_democracy_angle",
+  website: "website",
+};
+
+export const APPLIED_EDIT_KEYS = new Set([...Object.keys(COLUMN), "logoUpload", "keyProjects"]);
 
 async function gate(req: Request, env: Env): Promise<Response | null> {
   const hash = await ipHash(env.FORM_TOKEN_SECRET, clientIp(req));
@@ -209,14 +220,7 @@ export async function approveEdit(req: Request, env: Env, id: number): Promise<R
     .bind(id)
     .first<{ changes: string; org_slug: string }>();
   if (row !== null) {
-    const changes = JSON.parse(row.changes) as Record<string, string>;
-    // allow-list stops arbitrary keys in `changes` from reaching SQL as column names
-    const COLUMN: Record<string, string> = {
-      tagline: "tagline",
-      description: "description",
-      aiDemocracyAngle: "ai_democracy_angle",
-      website: "website",
-    };
+    const changes = JSON.parse(row.changes) as Record<string, unknown>;
     const now = new Date().toISOString();
     const updates: D1PreparedStatement[] = [];
     for (const [key, value] of Object.entries(changes)) {
@@ -224,13 +228,23 @@ export async function approveEdit(req: Request, env: Env, id: number): Promise<R
       if (column === undefined) continue;
       updates.push(
         env.DB.prepare(`UPDATE organizations SET ${column} = ?1, updated_at = ?2 WHERE slug = ?3`)
-          .bind(value, now, row.org_slug),
+          .bind(value as string, now, row.org_slug),
       );
     }
     if (typeof changes.logoUpload === "string") {
       updates.push(
         env.DB.prepare("UPDATE organizations SET logo_url = ?1, updated_at = ?2 WHERE slug = ?3")
           .bind(`/api/uploads/${changes.logoUpload}`, now, row.org_slug),
+      );
+    }
+    if (changes.keyProjects !== undefined) {
+      // JSON-encoded column skips the plain COLUMN path; re-validate since the row
+      // may have been stored under older rules and this is the last gate before it's public
+      const projects = validateKeyProjects(changes.keyProjects);
+      if (!projects.ok) return json({ detail: projects.detail }, 422);
+      updates.push(
+        env.DB.prepare("UPDATE organizations SET key_projects = ?1, updated_at = ?2 WHERE slug = ?3")
+          .bind(JSON.stringify(projects.value), now, row.org_slug),
       );
     }
     if (updates.length > 0) {
@@ -268,6 +282,43 @@ export async function reopen(
     .bind(id)
     .run();
   return json({ ok: true });
+}
+
+// allow-list stops arbitrary keys in the request body from reaching SQL as column names
+const ORG_COLUMN: Record<string, string> = {
+  name: "name", website: "website", tagline: "tagline", description: "description",
+  aiDemocracyAngle: "ai_democracy_angle", location: "location", logoDomain: "logo_domain",
+  category: "category", region: "region", depthRing: "depth_ring", founded: "founded",
+  focusTags: "focus_tags", funders: "funders", keyProjects: "key_projects",
+};
+const ORG_JSON_FIELDS = new Set(["focusTags", "funders", "keyProjects"]);
+
+export async function updateOrg(req: Request, env: Env, slug: string): Promise<Response> {
+  const denied = await gate(req, env);
+  if (denied) return denied;
+  const exists = await env.DB.prepare("SELECT 1 FROM organizations WHERE slug = ?1").bind(slug).first();
+  if (exists === null) return json({ detail: "organization not found" }, 404);
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return json({ detail: "invalid json body" }, 422);
+  }
+  const parsed = validateOrgUpdate(body);
+  if (!parsed.ok) return json({ detail: parsed.detail }, 422);
+
+  const now = new Date().toISOString();
+  const statements = Object.entries(parsed.value).map(([key, value]) =>
+    env.DB.prepare(`UPDATE organizations SET ${ORG_COLUMN[key]} = ?1, updated_at = ?2 WHERE slug = ?3`)
+      .bind(ORG_JSON_FIELDS.has(key) ? JSON.stringify(value) : value, now, slug),
+  );
+  const applied = await env.DB.batch(statements);
+  if (applied.some((result) => result.meta.changes === 0)) {
+    return json({ detail: "organization not found" }, 404);
+  }
+  await bumpOrgsVersion(env);
+  return json({ ok: true, slug });
 }
 
 export async function rejectEdit(req: Request, env: Env, id: number): Promise<Response> {
