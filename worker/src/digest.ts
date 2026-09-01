@@ -9,7 +9,7 @@ export async function getMeta(db: D1Database, key: string): Promise<string | nul
   return row?.value ?? null;
 }
 
-async function setMeta(db: D1Database, key: string, value: string): Promise<void> {
+export async function setMeta(db: D1Database, key: string, value: string): Promise<void> {
   await db
     .prepare("INSERT INTO meta (key, value) VALUES (?1, ?2) ON CONFLICT(key) DO UPDATE SET value = ?2")
     .bind(key, value)

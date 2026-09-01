@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { slugify } from "../src/admin";
+import { getMeta } from "../src/digest";
 import { ipHash } from "../src/rateLimit";
 import {
   VALID_DRAFT,
@@ -8,6 +10,7 @@ import {
   insertEdit,
   insertSubmission,
   seedCounter,
+  seedOrg,
   testEnv,
 } from "./helpers";
 
@@ -35,6 +38,8 @@ describe("admin auth", () => {
       post("/api/admin/submissions/1/reject"),
       post("/api/admin/edits/1/approve"),
       post("/api/admin/edits/1/reject"),
+      post("/api/admin/submissions/1/reopen"),
+      post("/api/admin/edits/1/reopen"),
     ];
     for (const req of paths) {
       expect((await dispatch(req, env)).status).toBe(401);
@@ -119,7 +124,7 @@ describe("submission triage", () => {
     expect(draft.status).toBe(200);
     const res = await dispatch(post(`/api/admin/submissions/${id}/approve`), env);
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true });
+    expect(await res.json()).toEqual({ ok: true, slug: "wahl-chat" });
     const row = await env.DB.prepare("SELECT status, draft, resolved_at FROM submissions WHERE id = ?1")
       .bind(id)
       .first<{ status: string; draft: string; resolved_at: string }>();
@@ -132,6 +137,38 @@ describe("submission triage", () => {
     const env = adminEnv();
     const id = await insertSubmission({ name: "Legacy Org", website: "https://legacy.example" });
     expect((await dispatch(post(`/api/admin/submissions/${id}/approve`), env)).status).toBe(200);
+  });
+
+  it("approving an enriched submission inserts the org and dedupes the slug", async () => {
+    const env = adminEnv();
+    await seedOrg({ slug: "sapiens-first", name: "Sapiens First" });
+    const versionBefore = Number((await getMeta(env.DB, "orgs_version")) ?? "0");
+    const id = await insertSubmission(V2_ORG);
+    await dispatch(post(`/api/admin/submissions/${id}/draft`,
+      { ...VALID_DRAFT, name: "Sapiens First" }), env);
+    const res = await dispatch(post(`/api/admin/submissions/${id}/approve`), env);
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { slug: string }).slug).toBe("sapiens-first-2");
+    const org = await env.DB.prepare("SELECT * FROM organizations WHERE slug = ?1")
+      .bind("sapiens-first-2")
+      .first<Record<string, unknown>>();
+    expect(org).toMatchObject({
+      name: "Sapiens First",
+      website: VALID_DRAFT.website,
+      category: VALID_DRAFT.category,
+      region: VALID_DRAFT.region,
+      tagline: VALID_DRAFT.tagline,
+      description: VALID_DRAFT.description,
+      location: "",
+      founded: null,
+      logo_domain: "wahl.chat",
+      logo_url: null,
+      depth_ring: "core",
+    });
+    expect(JSON.parse(String(org!.focus_tags))).toEqual(["elections"]);
+    expect(JSON.parse(String(org!.funders))).toEqual([]);
+    expect(JSON.parse(String(org!.key_projects))).toEqual([]);
+    expect(Number(await getMeta(env.DB, "orgs_version"))).toBe(versionBefore + 1);
   });
 
   it("422s an invalid draft", async () => {
@@ -172,7 +209,7 @@ describe("edit triage", () => {
     expect(rows[0]).toMatchObject({ id, orgSlug: "wahl-chat", changes: {}, status: "pending" });
   });
 
-  it("approves without mutating org data", async () => {
+  it("approves an edit with empty changes without touching the org row", async () => {
     const env = adminEnv();
     const id = await insertEdit("wahl-chat");
     const res = await dispatch(post(`/api/admin/edits/${id}/approve`), env);
@@ -191,5 +228,95 @@ describe("edit triage", () => {
     const id = await insertEdit("wahl-chat");
     expect((await dispatch(post(`/api/admin/edits/${id}/reject`), env)).status).toBe(200);
     expect((await dispatch(post(`/api/admin/edits/${id}/approve`), env)).status).toBe(409);
+  });
+
+  it("approving an edit applies the changes to the org row", async () => {
+    const env = adminEnv();
+    await seedOrg({ slug: "gamma", name: "Gamma", tagline: "old" });
+    const id = await insertEdit("gamma");
+    await env.DB.prepare("UPDATE edits SET changes = ?1 WHERE id = ?2")
+      .bind(JSON.stringify({ tagline: "new" }), id)
+      .run();
+    const res = await dispatch(post(`/api/admin/edits/${id}/approve`), env);
+    expect(res.status).toBe(200);
+    const org = (await (await dispatch(get("/api/orgs/gamma"), env)).json()) as { tagline: string };
+    expect(org.tagline).toBe("new");
+  });
+
+  it("404s approving an edit whose org row is gone and leaves the edit pending", async () => {
+    const env = adminEnv();
+    const id = await insertEdit("vanished");
+    await env.DB.prepare("UPDATE edits SET changes = ?1 WHERE id = ?2")
+      .bind(JSON.stringify({ tagline: "new" }), id)
+      .run();
+    const res = await dispatch(post(`/api/admin/edits/${id}/approve`), env);
+    expect(res.status).toBe(404);
+    const row = await env.DB.prepare("SELECT status FROM edits WHERE id = ?1")
+      .bind(id)
+      .first<{ status: string }>();
+    expect(row!.status).toBe("pending");
+  });
+});
+
+describe("slugify", () => {
+  it("keeps accented and non-Latin names routable", () => {
+    expect(slugify("Café Démocratie")).toBe("cafe-democratie");
+    expect(slugify("Ωmega Lab")).toBe("mega-lab");
+    expect(slugify("台灣民主實驗室")).toBe("org");
+    expect(slugify("Проект")).toBe("org");
+  });
+});
+
+describe("reopen", () => {
+  it("moves a resolved submission back to pending and clears resolved_at", async () => {
+    const env = adminEnv();
+    const id = await insertSubmission(V2_ORG);
+    expect((await dispatch(post(`/api/admin/submissions/${id}/reject`), env)).status).toBe(200);
+    const res = await dispatch(post(`/api/admin/submissions/${id}/reopen`), env);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+    const row = await env.DB.prepare("SELECT status, resolved_at FROM submissions WHERE id = ?1")
+      .bind(id)
+      .first<{ status: string; resolved_at: string | null }>();
+    expect(row).toEqual({ status: "pending", resolved_at: null });
+  });
+
+  it("moves a resolved edit back to pending without touching org data", async () => {
+    const env = adminEnv();
+    await seedOrg({ slug: "delta", name: "Delta", tagline: "kept" });
+    const id = await insertEdit("delta");
+    await env.DB.prepare("UPDATE edits SET changes = ?1 WHERE id = ?2")
+      .bind(JSON.stringify({ tagline: "applied" }), id)
+      .run();
+    expect((await dispatch(post(`/api/admin/edits/${id}/approve`), env)).status).toBe(200);
+    expect((await dispatch(post(`/api/admin/edits/${id}/reopen`), env)).status).toBe(200);
+    const row = await env.DB.prepare("SELECT status FROM edits WHERE id = ?1")
+      .bind(id)
+      .first<{ status: string }>();
+    expect(row!.status).toBe("pending");
+    const org = (await (await dispatch(get("/api/orgs/delta"), env)).json()) as { tagline: string };
+    expect(org.tagline).toBe("applied");
+  });
+
+  it("409s reopening an approved submission so its org is never inserted twice", async () => {
+    const env = adminEnv();
+    const id = await insertSubmission(V2_ORG);
+    await dispatch(post(`/api/admin/submissions/${id}/draft`, VALID_DRAFT), env);
+    expect((await dispatch(post(`/api/admin/submissions/${id}/approve`), env)).status).toBe(200);
+    const res = await dispatch(post(`/api/admin/submissions/${id}/reopen`), env);
+    expect(res.status).toBe(409);
+    const row = await env.DB.prepare("SELECT status FROM submissions WHERE id = ?1")
+      .bind(id)
+      .first<{ status: string }>();
+    expect(row!.status).toBe("approved");
+    const orgs = await env.DB.prepare("SELECT COUNT(*) AS n FROM organizations").first<{ n: number }>();
+    expect(orgs!.n).toBe(1);
+  });
+
+  it("404s an unknown id and 409s a row that is already pending", async () => {
+    const env = adminEnv();
+    expect((await dispatch(post("/api/admin/edits/999/reopen"), env)).status).toBe(404);
+    const id = await insertSubmission(V2_ORG);
+    expect((await dispatch(post(`/api/admin/submissions/${id}/reopen`), env)).status).toBe(409);
   });
 });

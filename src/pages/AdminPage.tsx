@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router";
 import {
   ApiError,
   adminListEdits,
   adminListSubmissions,
+  adminReopen,
   adminRequestLoginLink,
   adminResolve,
   adminResolveSubmission,
@@ -16,6 +18,7 @@ import {
   type OrgSubmission,
   type SubmissionV2Org,
 } from "../lib/api";
+import { useOrgs } from "../lib/useOrgs";
 import { REGION_BY_ID, REGIONS } from "../data/regions";
 import {
   CATEGORY_LABELS,
@@ -23,6 +26,7 @@ import {
   type Category,
   type DepthRing,
   type KeyProject,
+  type OrgSummary,
   type RegionId,
 } from "../data/types";
 import { isValidHttpUrl } from "../lib/forms";
@@ -157,6 +161,21 @@ export function AdminPage() {
     }
   }
 
+  async function reopenEdit(id: number) {
+    const snapshot = edits;
+    setBusyId(id);
+    setError(null);
+    setEdits((cur) => cur.filter((e) => e.id !== id)); // optimistic removal
+    try {
+      await adminReopen("edits", id);
+    } catch (err) {
+      setEdits(snapshot); // rollback
+      setError(describeError(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-7">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -224,6 +243,7 @@ export function AdminPage() {
                 busy={busyId === edit.id}
                 readOnly={status !== "pending"}
                 onResolve={resolve}
+                onReopen={reopenEdit}
               />
             ))}
           </div>
@@ -267,11 +287,13 @@ function EditCard({
   busy,
   readOnly,
   onResolve,
+  onReopen,
 }: {
   edit: EditSuggestion;
   busy: boolean;
   readOnly: boolean;
   onResolve: (id: number, action: "approve" | "reject") => void;
+  onReopen: (id: number) => void;
 }) {
   const fields = Object.keys(edit.changes) as (keyof EditChanges)[];
   return (
@@ -315,7 +337,9 @@ function EditCard({
         ))}
       </div>
 
-      {!readOnly && (
+      {readOnly ? (
+        <ReopenButton busy={busy} onClick={() => onReopen(edit.id)} />
+      ) : (
         <div className="flex gap-2 mt-5">
           <button
             type="button"
@@ -324,7 +348,7 @@ function EditCard({
             className="btn-corda-primary"
             style={busy ? { opacity: 0.5 } : undefined}
           >
-            {busy ? m["admin.busy"]() : m["admin.approve"]()}
+            {busy ? m["admin.busy"]() : m["admin.apply"]()}
           </button>
           <button
             type="button"
@@ -375,9 +399,63 @@ function FieldValue({
   );
 }
 
+function ReopenButton({ busy, onClick }: { busy: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={onClick}
+      className="btn-corda mt-5"
+      style={busy ? { opacity: 0.5 } : undefined}
+    >
+      {busy ? m["admin.busy"]() : m["admin.reopen"]()}
+    </button>
+  );
+}
+
+const host = (u: string) => {
+  try {
+    return new URL(u).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
+
+/** Flag-only match against the live org list: same name, or a shared hostname. */
+function findDuplicate(
+  orgs: OrgSummary[] | null,
+  name: string,
+  urls: string[],
+): OrgSummary | undefined {
+  return orgs?.find(
+    (o) =>
+      o.name.toLowerCase() === name.toLowerCase() ||
+      urls.some((u) => host(u) !== "" && host(u) === host(o.website)),
+  );
+}
+
+function DuplicateWarning({ org }: { org: OrgSummary }) {
+  return (
+    <p
+      className="text-sm px-3 py-2 mt-4"
+      style={{ color: "var(--accent-warm)", border: "1px dashed var(--accent-warm)" }}
+    >
+      {m["admin.duplicate"]()}{" "}
+      <Link
+        to={`/org/${org.slug}`}
+        target="_blank"
+        rel="noreferrer"
+        className="underline underline-offset-2"
+      >
+        {org.slug}
+      </Link>
+    </p>
+  );
+}
+
 /** New-organization submissions queue — parallels the edits queue with its own
- * status sub-tabs and optimistic approve/reject. Approve is triage only: the
- * entry goes live via the local audit pipeline → organizations.json → deploy. */
+ * status sub-tabs and optimistic resolve. Publishing an enriched submission
+ * inserts the org row, and the map serves it on the next load. */
 function SubmissionsQueue({
   describeError,
   needsLogin,
@@ -390,13 +468,15 @@ function SubmissionsQueue({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
-  const [approvedNotice, setApprovedNotice] = useState(false);
+  const [published, setPublished] = useState<{ slug: string | null } | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const { orgs } = useOrgs();
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setPublished(null);
     adminListSubmissions(status)
       .then((data) => {
         if (!cancelled) setSubs(data);
@@ -418,8 +498,8 @@ function SubmissionsQueue({
     setError(null);
     setSubs((cur) => cur.filter((s) => s.id !== id)); // optimistic removal
     try {
-      await adminResolveSubmission(id, action);
-      if (action === "approve") setApprovedNotice(true);
+      const result = await adminResolveSubmission(id, action);
+      if (action === "approve") setPublished({ slug: result.slug ?? null });
     } catch (err) {
       if (err instanceof ApiError && err.status === 409) {
         setError(m["admin.submissionResolved"]());
@@ -427,6 +507,21 @@ function SubmissionsQueue({
         setSubs(snapshot); // rollback
         setError(describeError(err));
       }
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function reopenSubmission(id: number) {
+    const snapshot = subs;
+    setBusyId(id);
+    setError(null);
+    setSubs((cur) => cur.filter((s) => s.id !== id)); // optimistic removal
+    try {
+      await adminReopen("submissions", id);
+    } catch (err) {
+      setSubs(snapshot); // rollback
+      setError(describeError(err));
     } finally {
       setBusyId(null);
     }
@@ -466,9 +561,23 @@ function SubmissionsQueue({
         {SUBMISSION_COUNT[status]({ count: subs.length })}
       </p>
 
-      {approvedNotice && (
+      {published && (
         <p className="mt-3 text-sm" style={{ color: "var(--ink-70)" }}>
-          {m["admin.approvedTriaged"]()}
+          {published.slug === null ? (
+            m["admin.approvedNoOrg"]()
+          ) : (
+            <>
+              {m["admin.published"]()}{" "}
+              <Link
+                to={`/org/${published.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              >
+                /org/{published.slug}
+              </Link>
+            </>
+          )}
         </p>
       )}
 
@@ -501,7 +610,9 @@ function SubmissionsQueue({
             editing={editingId === sub.id}
             onToggleEdit={(id) => setEditingId((cur) => (cur === id ? null : id))}
             onResolve={resolve}
+            onReopen={reopenSubmission}
             onSaveDraft={saveDraft}
+            orgs={orgs}
           />
         ))}
       </div>
@@ -516,7 +627,9 @@ interface SubmissionCardProps {
   editing: boolean;
   onToggleEdit: (id: number) => void;
   onResolve: (id: number, action: "approve" | "reject") => void;
+  onReopen: (id: number) => void;
   onSaveDraft: (id: number, draft: NewOrgDraftFull) => Promise<boolean>;
+  orgs: OrgSummary[] | null;
 }
 
 function SubmissionCard(props: SubmissionCardProps) {
@@ -536,9 +649,12 @@ function SubmissionV2Card({
   editing,
   onToggleEdit,
   onResolve,
+  onReopen,
   onSaveDraft,
+  orgs,
 }: SubmissionCardProps & { org: SubmissionV2Org }) {
   const hasDraft = sub.draft != null;
+  const duplicate = findDuplicate(orgs, org.name, org.urls);
   return (
     <div className="corda-card p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -585,8 +701,11 @@ function SubmissionV2Card({
         </p>
       )}
 
+      {readOnly && <ReopenButton busy={busy} onClick={() => onReopen(sub.id)} />}
+
       {!readOnly && (
         <>
+          {duplicate && <DuplicateWarning org={duplicate} />}
           <p className="eyebrow mt-4" style={{ color: hasDraft ? "var(--ink-50)" : "var(--accent-warm)" }}>
             {hasDraft ? m["admin.draftReady"]() : m["admin.draftNeeded"]()}
           </p>
@@ -601,7 +720,7 @@ function SubmissionV2Card({
               className="btn-corda-primary"
               style={busy || !hasDraft ? { opacity: 0.5 } : undefined}
             >
-              {busy ? m["admin.busy"]() : m["admin.approve"]()}
+              {busy ? m["admin.busy"]() : m["admin.publish"]()}
             </button>
             <button
               type="button"
@@ -635,8 +754,11 @@ function SubmissionV1Card({
   busy,
   readOnly,
   onResolve,
+  onReopen,
+  orgs,
 }: SubmissionCardProps & { org: NewOrgDraft }) {
   const region = REGION_BY_ID[org.region];
+  const duplicate = findDuplicate(orgs, org.name, [org.website]);
   return (
     <div className="corda-card p-5">
       <div className="flex items-start gap-3">
@@ -700,27 +822,32 @@ function SubmissionV1Card({
         {contributorLineFor(sub.contributorName, sub.contributorEmail)}
       </p>
 
+      {readOnly && <ReopenButton busy={busy} onClick={() => onReopen(sub.id)} />}
+
       {!readOnly && (
-        <div className="flex gap-2 mt-5">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onResolve(sub.id, "approve")}
-            className="btn-corda-primary"
-            style={busy ? { opacity: 0.5 } : undefined}
-          >
-            {busy ? m["admin.busy"]() : m["admin.approve"]()}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onResolve(sub.id, "reject")}
-            className="btn-corda"
-            style={busy ? { opacity: 0.5 } : undefined}
-          >
-            {m["admin.reject"]()}
-          </button>
-        </div>
+        <>
+          {duplicate && <DuplicateWarning org={duplicate} />}
+          <div className="flex gap-2 mt-5">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onResolve(sub.id, "approve")}
+              className="btn-corda-primary"
+              style={busy ? { opacity: 0.5 } : undefined}
+            >
+              {busy ? m["admin.busy"]() : m["admin.publish"]()}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onResolve(sub.id, "reject")}
+              className="btn-corda"
+              style={busy ? { opacity: 0.5 } : undefined}
+            >
+              {m["admin.reject"]()}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

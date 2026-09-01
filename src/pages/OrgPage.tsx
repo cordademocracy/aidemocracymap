@@ -4,7 +4,7 @@ import { loadSnapshot } from "../data/organizations";
 import { REGION_BY_ID } from "../data/regions";
 import { CATEGORY_LABELS, DEPTH_LABELS, type Organization } from "../data/types";
 import { OrgLogo } from "../components/OrgLogo";
-import { fetchOrg } from "../lib/api";
+import { ApiError, fetchOrg } from "../lib/api";
 import { useOrgs } from "../lib/useOrgs";
 import { useDocumentTitle } from "../lib/useDocumentTitle";
 import { OrgCard } from "../components/OrgCard";
@@ -22,8 +22,8 @@ export function OrgPage() {
   const { orgs: allOrgs } = useOrgs();
   useDocumentTitle(org?.name);
 
-  // Prefer backend data so approved edits are visible; fall back to the
-  // lazy-imported bundled snapshot on any error (offline-first, D8).
+  // Prefer backend data so approved edits are visible; a 404 is authoritative,
+  // other errors fall back to the lazy-imported bundled snapshot (D8).
   useEffect(() => {
     if (!slug) return;
     let cancelled = false;
@@ -32,7 +32,11 @@ export function OrgPage() {
       .then((fresh) => {
         if (!cancelled) setOrg(fresh);
       })
-      .catch(async () => {
+      .catch(async (err) => {
+        if (err instanceof ApiError && err.status === 404) {
+          if (!cancelled) setOrg(null);
+          return;
+        }
         const snapshot = await loadSnapshot();
         if (!cancelled) setOrg(snapshot.find((o) => o.slug === slug) ?? null);
       });

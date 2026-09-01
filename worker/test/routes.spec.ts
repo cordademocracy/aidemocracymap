@@ -69,8 +69,7 @@ describe("CORS for the two-server dev setup", () => {
 });
 
 describe("unknown routes", () => {
-  it("404s the retired org read endpoints", async () => {
-    expect((await dispatch(apiRequest("/api/orgs"))).status).toBe(404);
-    expect((await dispatch(apiRequest("/api/orgs/wahl-chat"))).status).toBe(404);
+  it("404s a path with no matching handler", async () => {
+    expect((await dispatch(apiRequest("/api/nope"))).status).toBe(404);
   });
 });

@@ -1,0 +1,39 @@
+name: Sync dataset from D1
+
+# Runs in the PRIVATE repo only. publish.sh wipes and re-copies the public
+# checkout, so a commit made there would be destroyed on the next publish.
+on:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Fetch the live dataset
+        run: |
+          curl -fsS https://ai4democracy.world/api/export -o /tmp/export.json
+          test "$(jq 'length' /tmp/export.json)" -gt 100
+
+      - name: Write it in the repo's formatting
+        run: |
+          jq --indent 2 '.' /tmp/export.json > src/data/organizations.json
+
+      # Needs the repo setting "Allow GitHub Actions to create and approve pull requests".
+      - name: Open a pull request
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          branch: sync/dataset
+          title: "data: weekly dataset sync from D1"
+          commit-message: "data: weekly dataset sync from D1"
+          body: |
+            Automated snapshot of the live D1 dataset.
+            The diff below is every org change published through /admin since the last sync.
+          add-paths: src/data/organizations.json

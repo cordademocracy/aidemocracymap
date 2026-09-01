@@ -1,4 +1,5 @@
 import { requireAdmin } from "./adminAuth";
+import { bumpOrgsVersion } from "./orgs";
 import { LIMITS, hit, ipHash } from "./rateLimit";
 import { clientIp, json, type Env } from "./types";
 import { uploadExists } from "./uploads";
@@ -105,6 +106,28 @@ async function loadPending(
   return row;
 }
 
+/** Always non-empty: a slug is the org PK and the only handle `/api/orgs/:slug` accepts. */
+export function slugify(name: string): string {
+  const slug = name
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return slug === "" ? "org" : slug;
+}
+
+/** Suffixes -2, -3 … so a repeat name can never collide with the slug PK. */
+export async function uniqueSlug(env: Env, base: string): Promise<string> {
+  for (let n = 1; ; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+    const hit = await env.DB.prepare("SELECT 1 FROM organizations WHERE slug = ?1")
+      .bind(candidate)
+      .first();
+    if (hit === null) return candidate;
+  }
+}
+
 async function resolve(env: Env, table: "submissions" | "edits", id: number, status: string): Promise<void> {
   await env.DB.prepare(`UPDATE ${table} SET status = ?1, resolved_at = ?2 WHERE id = ?3`)
     .bind(status, new Date().toISOString(), id)
@@ -142,8 +165,30 @@ export async function approveSubmission(req: Request, env: Env, id: number): Pro
     const org = JSON.parse(pending.org ?? "{}") as { v?: number };
     if (org.v === 2) return json({ detail: "enrich the submission before approving" }, 409);
   }
+  const draft = JSON.parse(pending.draft ?? "null") as Record<string, unknown> | null;
+  let slug: string | null = null;
+  if (draft !== null) {
+    slug = await uniqueSlug(env, slugify(String(draft.name)));
+    const host = (() => { try { return new URL(String(draft.website)).hostname.replace(/^www\./, ""); } catch { return ""; } })();
+    await env.DB.prepare(
+      `INSERT INTO organizations (slug,name,website,category,region,tagline,description,
+       ai_democracy_angle,focus_tags,location,founded,funders,key_projects,logo_domain,logo_url,
+       depth_ring,updated_at) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`,
+    )
+      .bind(
+        slug, String(draft.name), String(draft.website), String(draft.category),
+        String(draft.region), String(draft.tagline), String(draft.description ?? ""),
+        String(draft.aiDemocracyAngle ?? ""), JSON.stringify(draft.focusTags ?? []),
+        String(draft.location ?? ""), draft.founded == null ? null : Number(draft.founded),
+        JSON.stringify(draft.funders ?? []), JSON.stringify(draft.keyProjects ?? []),
+        host, draft.logoUpload == null ? null : `/api/uploads/${String(draft.logoUpload)}`,
+        String(draft.depthRing ?? "core"), new Date().toISOString(),
+      )
+      .run();
+    await bumpOrgsVersion(env);
+  }
   await resolve(env, "submissions", id, "approved");
-  return json({ ok: true });
+  return json({ ok: true, slug });
 }
 
 export async function rejectSubmission(req: Request, env: Env, id: number): Promise<Response> {
@@ -160,7 +205,68 @@ export async function approveEdit(req: Request, env: Env, id: number): Promise<R
   if (denied) return denied;
   const pending = await loadPending(env, "edits", id);
   if (pending instanceof Response) return pending;
+  const row = await env.DB.prepare("SELECT changes, org_slug FROM edits WHERE id = ?1")
+    .bind(id)
+    .first<{ changes: string; org_slug: string }>();
+  if (row !== null) {
+    const changes = JSON.parse(row.changes) as Record<string, string>;
+    // allow-list stops arbitrary keys in `changes` from reaching SQL as column names
+    const COLUMN: Record<string, string> = {
+      tagline: "tagline",
+      description: "description",
+      aiDemocracyAngle: "ai_democracy_angle",
+      website: "website",
+    };
+    const now = new Date().toISOString();
+    const updates: D1PreparedStatement[] = [];
+    for (const [key, value] of Object.entries(changes)) {
+      const column = COLUMN[key];
+      if (column === undefined) continue;
+      updates.push(
+        env.DB.prepare(`UPDATE organizations SET ${column} = ?1, updated_at = ?2 WHERE slug = ?3`)
+          .bind(value, now, row.org_slug),
+      );
+    }
+    if (typeof changes.logoUpload === "string") {
+      updates.push(
+        env.DB.prepare("UPDATE organizations SET logo_url = ?1, updated_at = ?2 WHERE slug = ?3")
+          .bind(`/api/uploads/${changes.logoUpload}`, now, row.org_slug),
+      );
+    }
+    if (updates.length > 0) {
+      const applied = await env.DB.batch(updates);
+      if (applied.some((result) => result.meta.changes === 0)) {
+        return json({ detail: "organization not found" }, 404);
+      }
+    }
+    await bumpOrgsVersion(env);
+  }
   await resolve(env, "edits", id, "approved");
+  return json({ ok: true });
+}
+
+/** Puts a resolved row back in the pending list. An approved submission stays
+ * closed: `submissions` records no slug, so approving it twice would insert a
+ * second org row. An approved edit reopens; re-applying it is idempotent. */
+export async function reopen(
+  req: Request,
+  env: Env,
+  table: "submissions" | "edits",
+  id: number,
+): Promise<Response> {
+  const denied = await gate(req, env);
+  if (denied) return denied;
+  const row = await env.DB.prepare(`SELECT status FROM ${table} WHERE id = ?1`)
+    .bind(id)
+    .first<{ status: string }>();
+  if (row === null) return json({ detail: `${table.slice(0, -1)} not found` }, 404);
+  if (row.status === "pending") return json({ detail: `${table.slice(0, -1)} already pending` }, 409);
+  if (table === "submissions" && row.status !== "rejected") {
+    return json({ detail: "an approved submission cannot be reopened; edit the published org instead" }, 409);
+  }
+  await env.DB.prepare(`UPDATE ${table} SET status = 'pending', resolved_at = NULL WHERE id = ?1`)
+    .bind(id)
+    .run();
   return json({ ok: true });
 }
 

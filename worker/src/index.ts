@@ -5,20 +5,22 @@ import {
   listSubmissions,
   rejectEdit,
   rejectSubmission,
+  reopen,
   saveSubmissionDraft,
 } from "./admin";
 import { consumeLoginLink, requestLoginLink } from "./adminAuth";
 import { getMeta, runDigest } from "./digest";
 import { createEdit } from "./edits";
 import { issueToken } from "./formToken";
+import { exportOrgs, getOrg, listOrgs } from "./orgs";
 import { LIMITS, hit, ipHash } from "./rateLimit";
 import { createSubmission } from "./submissions";
 import { clientIp, json, type Env } from "./types";
 import { createUpload, serveUpload } from "./uploads";
 
 const UPLOAD_ROUTE = /^\/api\/uploads\/([A-Za-z0-9_.-]+)$/;
-const ADMIN_SUBMISSION_ACTION = /^\/api\/admin\/submissions\/(\d+)\/(draft|approve|reject)$/;
-const ADMIN_EDIT_ACTION = /^\/api\/admin\/edits\/(\d+)\/(approve|reject)$/;
+const ADMIN_SUBMISSION_ACTION = /^\/api\/admin\/submissions\/(\d+)\/(draft|approve|reject|reopen)$/;
+const ADMIN_EDIT_ACTION = /^\/api\/admin\/edits\/(\d+)\/(approve|reject|reopen)$/;
 
 async function handle(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
@@ -35,6 +37,17 @@ async function handle(req: Request, env: Env): Promise<Response> {
     if (!ok) return json({ detail: "rate limit exceeded" }, 429);
     return json({ token: await issueToken(env.FORM_TOKEN_SECRET) });
   }
+
+  if (method === "GET" && path === "/api/export") {
+    const hash = await ipHash(env.FORM_TOKEN_SECRET, clientIp(req));
+    const ok = await hit(env.DB, "exp", hash, 10, 3600);
+    if (!ok) return json({ detail: "rate limit exceeded" }, 429);
+    return exportOrgs(env);
+  }
+
+  if (method === "GET" && path === "/api/orgs") return listOrgs(req, env);
+  const orgMatch = path.match(/^\/api\/orgs\/([a-z0-9-]+)$/);
+  if (method === "GET" && orgMatch) return getOrg(env, orgMatch[1]!);
 
   if (method === "POST" && path === "/api/submissions") return createSubmission(req, env);
   if (method === "POST" && path === "/api/edits") return createEdit(req, env);
@@ -54,6 +67,7 @@ async function handle(req: Request, env: Env): Promise<Response> {
     const id = Number(subMatch[1]);
     if (subMatch[2] === "draft") return saveSubmissionDraft(req, env, id);
     if (subMatch[2] === "approve") return approveSubmission(req, env, id);
+    if (subMatch[2] === "reopen") return reopen(req, env, "submissions", id);
     return rejectSubmission(req, env, id);
   }
 
@@ -61,6 +75,7 @@ async function handle(req: Request, env: Env): Promise<Response> {
   if (method === "POST" && editMatch) {
     const id = Number(editMatch[1]);
     if (editMatch[2] === "approve") return approveEdit(req, env, id);
+    if (editMatch[2] === "reopen") return reopen(req, env, "edits", id);
     return rejectEdit(req, env, id);
   }
 

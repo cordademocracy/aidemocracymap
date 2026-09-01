@@ -12,9 +12,9 @@ import { searchOrgs } from "./orgs";
 /**
  * API client for the AI4Democracy map.
  *
- * Org data is baked into the bundle at build time; only the contribution and
- * admin flows talk to the Worker (dev: wrangler dev on :8787, prod: same-origin
- * /api). Every call has an 8s timeout and, on failure, throws an ApiError
+ * Every flow talks to the Worker (dev: wrangler dev on :8787, prod: same-origin
+ * /api); the bundled dataset is the offline fallback for org reads. Every call
+ * has an 8s timeout and, on failure, throws an ApiError
  * carrying the HTTP status so the UI can special-case 401 / 429 / etc.
  * Network/timeout failures use status 0.
  */
@@ -216,20 +216,32 @@ export function fetchFormToken(): Promise<{ token: string }> {
   return request<{ token: string }>("/form-token");
 }
 
-/** Org summaries (D13) from the baked dataset, optionally filtered by
- * keyword/category. Kept promise-shaped so callers are agnostic to the source. */
-export function fetchOrgs(q?: string, category?: string): Promise<OrgSummary[]> {
-  return Promise.resolve(
-    searchOrgs(ORGS.map(toSummary), q ?? "", category as Category | undefined)
-  );
+/** Sanity floor mirroring the one in .github/workflows/sync-dataset.yml: a
+ * truncated dataset must not reach the map. */
+const MIN_ORGS = 100;
+
+/** Live dataset, with the bundled snapshot as the offline fallback: the map
+ * must render when the API is unreachable or answers with a partial dataset. */
+export async function fetchOrgs(q?: string, category?: string): Promise<OrgSummary[]> {
+  let all: OrgSummary[];
+  try {
+    const live = await request<OrgSummary[]>("/orgs");
+    all = live.length < MIN_ORGS ? ORGS.map(toSummary) : live;
+  } catch {
+    all = ORGS.map(toSummary);
+  }
+  return searchOrgs(all, q ?? "", category as Category | undefined);
 }
 
-/** One org from the baked dataset (unknown slug → ApiError with status 404). */
-export function fetchOrg(slug: string): Promise<Organization> {
-  const org = ORGS.find((o) => o.slug === slug);
-  return org
-    ? Promise.resolve(org)
-    : Promise.reject(new ApiError(404, "Organization not found"));
+export async function fetchOrg(slug: string): Promise<Organization> {
+  try {
+    return await request<Organization>(`/orgs/${slug}`);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) throw err;
+    const org = ORGS.find((o) => o.slug === slug);
+    if (org === undefined) throw new ApiError(404, "Organization not found");
+    return org;
+  }
 }
 
 /** POST /api/edits — submit a contributor edit suggestion. */
@@ -321,14 +333,23 @@ export function adminSaveSubmissionDraft(
 
 /**
  * POST /api/admin/submissions/{id}/{approve|reject} — resolve a submission.
- * Approve is triage only: the entry goes live via the local audit pipeline →
- * organizations.json → deploy, not through this API.
+ * Approving an enriched submission inserts the org and returns its slug; a
+ * grandfathered row without a draft resolves with a null slug.
  */
 export function adminResolveSubmission(
   id: number,
   action: "approve" | "reject"
-): Promise<{ ok: boolean }> {
-  return request<{ ok: boolean }>(`/admin/submissions/${id}/${action}`, {
+): Promise<{ ok: boolean; slug?: string | null }> {
+  return request<{ ok: boolean; slug?: string | null }>(`/admin/submissions/${id}/${action}`, {
     method: "POST",
   });
+}
+
+/** POST /api/admin/{submissions|edits}/{id}/reopen — put a resolved row back in
+ * the pending list. Applied org data is left untouched. */
+export function adminReopen(
+  table: "submissions" | "edits",
+  id: number
+): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/admin/${table}/${id}/reopen`, { method: "POST" });
 }

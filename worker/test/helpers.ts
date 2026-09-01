@@ -154,3 +154,23 @@ export async function uploadRequest(file: File | null, ageSeconds = 10, ip = "20
   const headers = new Headers({ "CF-Connecting-IP": ip });
   return new Request("https://example.com/api/uploads", { method: "POST", body: form, headers });
 }
+
+export async function seedOrg(overrides: Record<string, unknown> = {}): Promise<string> {
+  const o = {
+    slug: "test-org", name: "Test Org", website: "https://test.org", category: "research",
+    region: "research-range", tagline: "t", description: "", ai_democracy_angle: "",
+    focus_tags: "[]", location: "", founded: null, funders: "[]", key_projects: "[]",
+    logo_domain: "", logo_url: null, depth_ring: "core", updated_at: new Date().toISOString(),
+    ...overrides,
+  };
+  await env.DB.prepare(
+    `INSERT INTO organizations (slug,name,website,category,region,tagline,description,
+     ai_democracy_angle,focus_tags,location,founded,funders,key_projects,logo_domain,logo_url,
+     depth_ring,updated_at) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`,
+  )
+    .bind(o.slug, o.name, o.website, o.category, o.region, o.tagline, o.description,
+      o.ai_democracy_angle, o.focus_tags, o.location, o.founded, o.funders, o.key_projects,
+      o.logo_domain, o.logo_url, o.depth_ring, o.updated_at)
+    .run();
+  return o.slug as string;
+}
