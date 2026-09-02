@@ -601,12 +601,13 @@ body {
 .map-gesturing .bb-card {
   transition: none;
 }
+.map-gesturing .oracle-matrix {
+  transition: none;
+}
 
 /* ── deliberation delta: the oracle's weights resolve only past deep zoom.
-   --zoom-k is the settled effective scale published by useMapViewport; a
+   --zoom-k is the live effective scale published by useMapViewport; a
    missing var yields a negative number, which clamps to 0. */
-/* --zoom-k is only rewritten once a gesture settles, so the ramp is what turns
-   that step into a resolve */
 .oracle-matrix {
   opacity: calc((var(--zoom-k, 0) - 1.7) * 1.43);
   transition: opacity 240ms linear;

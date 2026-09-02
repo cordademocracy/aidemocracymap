@@ -84,9 +84,20 @@ export async function uploadExists(env: Env, name: string): Promise<boolean> {
 }
 
 export async function serveUpload(req: Request, env: Env, name: string): Promise<Response> {
-  const denied = await requireAdmin(req, env);
-  if (denied) return denied;
-  if (!UPLOAD_NAME_RE.test(name)) return json({ detail: "not found" }, 404);
+  if (!UPLOAD_NAME_RE.test(name)) {
+    const denied = await requireAdmin(req, env);
+    return denied ?? json({ detail: "not found" }, 404);
+  }
+  // An upload becomes public only once an org's logo_url references it; until
+  // then only an admin can see it, so anonymous uploads are not a file host.
+  const referenced = await env.DB.prepare("SELECT 1 FROM organizations WHERE logo_url = ?1")
+    .bind(`/api/uploads/${name}`)
+    .first();
+  const isPublic = referenced !== null;
+  if (!isPublic) {
+    const denied = await requireAdmin(req, env);
+    if (denied) return denied;
+  }
   const { value, metadata } = await env.UPLOADS.getWithMetadata<{ contentType?: string }>(
     name,
     "arrayBuffer",
@@ -97,9 +108,9 @@ export async function serveUpload(req: Request, env: Env, name: string): Promise
     status: 200,
     headers: {
       "content-type": metadata?.contentType ?? MIME[ext] ?? "application/octet-stream",
-      "content-disposition": `attachment; filename="${name}"`,
+      "content-disposition": isPublic ? "inline" : `attachment; filename="${name}"`,
       "x-content-type-options": "nosniff",
-      "cache-control": "private, max-age=0",
+      "cache-control": isPublic ? "public, max-age=86400, stale-while-revalidate=604800" : "private, max-age=0",
     },
   });
 }

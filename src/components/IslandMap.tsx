@@ -37,6 +37,9 @@ interface Props {
   orgs: OrgSummary[];
   /** deep-link slug (?org=) to restore on load; read once, ignored after */
   initialSelectedSlug?: string;
+  /** rendered last inside the container div, above the SVG (e.g. OrgTooltip) —
+   * must stay inside this subtree so wheel events over it reach onWheelNative */
+  children?: ReactNode;
 }
 
 const NODE_R: Record<OrgSummary["depthRing"], number> = {
@@ -103,6 +106,7 @@ export const IslandMap = memo(function IslandMap({
   selectedSlug,
   orgs,
   initialSelectedSlug,
+  children,
 }: Props) {
   // dev flag: /?nodes=0 hides the org nodes to work on the terrain art
   const hideNodes =
@@ -387,6 +391,8 @@ export const IslandMap = memo(function IslandMap({
           </g>
         </g>
       </svg>
+
+      {children}
 
       {hover && !selectedSlug && (
         <div

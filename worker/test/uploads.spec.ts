@@ -1,7 +1,7 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
 import { UPLOAD_NAME_RE } from "../src/validate";
-import { adminEnv, apiRequest, dispatch, pngFile, testEnv, uploadRequest } from "./helpers";
+import { adminEnv, apiRequest, dispatch, pngFile, seedOrg, testEnv, uploadRequest } from "./helpers";
 
 async function uploadedKeys(): Promise<string[]> {
   const listed = await env.UPLOADS.list();
@@ -72,6 +72,22 @@ describe("GET /api/uploads/{name}", () => {
     expect(res.headers.get("content-type")).toBe("image/png");
     expect(res.headers.get("x-content-type-options")).toBe("nosniff");
     expect(res.headers.get("content-disposition")).toContain("attachment");
+  });
+
+  it("serves an org-referenced upload publicly, inline and cacheable", async () => {
+    const created = await dispatch(await uploadRequest(pngFile()));
+    const { id } = (await created.json()) as { id: string };
+    await seedOrg({ slug: "logo-org", logo_url: `/api/uploads/${id}` });
+    const res = await dispatch(apiRequest(`/api/uploads/${id}`), testEnv());
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-disposition")).toBe("inline");
+    expect(res.headers.get("cache-control")).toContain("public");
+  });
+
+  it("keeps an unreferenced upload admin-only", async () => {
+    const created = await dispatch(await uploadRequest(pngFile()));
+    const { id } = (await created.json()) as { id: string };
+    expect((await dispatch(apiRequest(`/api/uploads/${id}`), testEnv())).status).toBe(401);
   });
 
   it("404s a phantom id and a malformed name for an admin", async () => {
