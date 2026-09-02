@@ -46,37 +46,49 @@ export interface Base {
   y: number;
 }
 
+/** Lowest container-fill fraction at which the fits→overflow blend may begin. */
+const BLEND_START = 0.85;
+
 /**
  * Keep the panned/zoomed content inside the container. A canvas point px maps
- * to screen X = v.x + v.k*base.x + v.k*base.k*px, so the content's left edge is
- * `v.x + v.k*base.x` and its width is `v.k*base.k*W`. If the content is smaller
- * than the container on an axis, the island's visual center (ISLAND_CX/CY) is
- * locked to the container center; otherwise panning is clamped against the full
- * canvas extents so neither edge leaves a gap. Pure — returns a new view.
+ * to screen X = v.x + v.k*base.x + v.k*base.k*px. Below the blend band the
+ * island center (ISLAND_CX/CY) is locked to the container center; above fill 1
+ * panning is clamped against the canvas extents so neither edge leaves a gap;
+ * inside the band the two candidate positions are linearly interpolated so
+ * crossing the fit threshold never jumps. Pure — returns a new view.
  */
 function clampView(v: ViewState, size: Size, base: Base): ViewState {
   const contentW = v.k * base.k * W;
   const contentH = v.k * base.k * H;
 
-  let x: number;
-  if (contentW <= size.w) {
-    // content fits: map the island center (ISLAND_CX) to the container center,
-    // i.e. solve screenX(ISLAND_CX) = size.w/2 for x
-    x = size.w / 2 - v.k * base.x - v.k * base.k * ISLAND_CX;
-  } else {
-    const maxX = -v.k * base.x; // left edge flush at 0
-    const minX = size.w - contentW - v.k * base.x; // right edge flush at size.w
-    x = Math.min(maxX, Math.max(minX, v.x));
-  }
+  const centeredX = size.w / 2 - v.k * base.x - v.k * base.k * ISLAND_CX;
+  const rawMaxX = -v.k * base.x; // left edge flush at 0
+  const rawMinX = size.w - contentW - v.k * base.x; // right edge flush at size.w
+  // when contentW < size.w these are inverted (minX > maxX); order them so the
+  // clamp is still well-defined — the ordered midpoint equals centeredX exactly
+  // at contentW == size.w, so the blend has no seam at fill == 1
+  const maxX = Math.max(rawMaxX, rawMinX);
+  const minX = Math.min(rawMaxX, rawMinX);
+  const clampedX = Math.min(maxX, Math.max(minX, v.x));
 
-  let y: number;
-  if (contentH <= size.h) {
-    y = size.h / 2 - v.k * base.y - v.k * base.k * ISLAND_CY;
-  } else {
-    const maxY = -v.k * base.y;
-    const minY = size.h - contentH - v.k * base.y;
-    y = Math.min(maxY, Math.max(minY, v.y));
-  }
+  const centeredY = size.h / 2 - v.k * base.y - v.k * base.k * ISLAND_CY;
+  const rawMaxY = -v.k * base.y;
+  const rawMinY = size.h - contentH - v.k * base.y;
+  const maxY = Math.max(rawMaxY, rawMinY);
+  const minY = Math.min(rawMaxY, rawMinY);
+  const clampedY = Math.min(maxY, Math.max(minY, v.y));
+
+  const fillX = contentW / size.w;
+  const fillY = contentH / size.h;
+  // the band never opens below the resting fill (v.k == 1), so the default view
+  // stays exactly island-centered; fitScale's 0.98 margin bounds the start at
+  // 0.98, keeping the band at least 0.02 wide on either axis
+  const startX = Math.max(BLEND_START, (base.k * W) / size.w);
+  const startY = Math.max(BLEND_START, (base.k * H) / size.h);
+  const x = fillX <= startX ? centeredX : fillX >= 1 ? clampedX
+    : centeredX + ((fillX - startX) / (1 - startX)) * (clampedX - centeredX);
+  const y = fillY <= startY ? centeredY : fillY >= 1 ? clampedY
+    : centeredY + ((fillY - startY) / (1 - startY)) * (clampedY - centeredY);
 
   return { k: v.k, x, y };
 }
@@ -112,6 +124,7 @@ export function useMapViewport() {
   const sizeRef = useRef(size);
   sizeRef.current = size;
   const rafId = useRef(0);
+  const lastScale = useRef(Number.NaN);
   const settleTimer = useRef(0);
   const gestureActive = useRef(false);
   // container rect, cached once per gesture (getBoundingClientRect forces layout)
@@ -146,12 +159,26 @@ export function useMapViewport() {
   const baseRef = useRef(base);
   baseRef.current = base;
 
+  /**
+   * Live effective scale (view.k * base.k) as a CSS var for zoom-gated decor.
+   * A custom property on the container invalidates the whole scene subtree, so
+   * the write is skipped whenever the effective scale is unchanged — a pan
+   * gesture must not invalidate anything.
+   */
+  const publishScale = useCallback(() => {
+    const k = liveView.current.k * baseRef.current.k;
+    if (k === lastScale.current || !containerRef.current) return;
+    lastScale.current = k;
+    containerRef.current.style.setProperty("--zoom-k", `${k}`);
+  }, []);
+
   // rAF-coalesced write of the live transform straight to the DOM
   const applyLive = useCallback(() => {
     rafId.current = 0;
     const v = liveView.current;
     sceneRef.current?.setAttribute("transform", `translate(${v.x} ${v.y}) scale(${v.k})`);
-  }, []);
+    publishScale();
+  }, [publishScale]);
 
   const scheduleApply = useCallback(() => {
     if (!gestureActive.current) {
@@ -164,18 +191,6 @@ export function useMapViewport() {
     }
     if (!rafId.current) rafId.current = requestAnimationFrame(applyLive);
   }, [applyLive]);
-
-  /**
-   * Live effective scale (view.k * base.k) as a CSS var for zoom-gated decor.
-   * A custom property on the container invalidates the whole scene subtree, so
-   * this must stay on the settle cadence — never per gesture frame.
-   */
-  const publishScale = useCallback(() => {
-    containerRef.current?.style.setProperty(
-      "--zoom-k",
-      `${liveView.current.k * baseRef.current.k}`
-    );
-  }, []);
 
   /** Gesture over: flush the pending frame, drop the layer, commit React state. */
   const settle = useCallback(() => {
@@ -281,7 +296,7 @@ export function useMapViewport() {
   );
 
   const resetView = useCallback(() => {
-    liveView.current = { x: 0, y: 0, k: 1 };
+    liveView.current = clampView({ x: 0, y: 0, k: 1 }, sizeRef.current, baseRef.current);
     settle();
   }, [settle]);
 

@@ -14,7 +14,8 @@
     "preview": "vite preview",
     "fetch-logos": "node scripts/fetch-logos.mjs",
     "optimize-logos": "node scripts/optimize-logos.mjs",
-    "generate-og": "node scripts/generate-og.mjs"
+    "generate-og": "node scripts/generate-og.mjs",
+    "verify-clamp": "node scripts/verify-clamp.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.7",

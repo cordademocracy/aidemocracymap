@@ -49,6 +49,13 @@ export function MapPage() {
     [setSearchParams]
   );
 
+  // stable children identity so memo(IslandMap) doesn't re-render all nodes
+  // when MapPage re-renders for reasons unrelated to selection (e.g. addOpen)
+  const tooltip = useMemo(
+    () => (selection ? <OrgTooltip selection={selection} onClose={() => handleSelect(null)} /> : null),
+    [selection, handleSelect]
+  );
+
   // a ?org= slug that isn't in the dataset can never be restored — drop it once
   // the list has actually loaded, so a stale share link doesn't stick
   useEffect(() => {
@@ -94,13 +101,13 @@ export function MapPage() {
         selectedSlug={selection?.org.slug}
         orgs={orgs ?? NO_ORGS}
         initialSelectedSlug={initialOrgSlug}
-      />
+      >
+        {tooltip}
+      </IslandMap>
 
       <OrgIndex byRegion={byRegion} />
 
       <MapAttribution />
-
-      {selection && <OrgTooltip selection={selection} onClose={() => handleSelect(null)} />}
 
       {addOpen && (
         <Suspense fallback={null}>
