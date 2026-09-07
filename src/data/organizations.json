@@ -1628,7 +1628,12 @@
     "location": "USA (distributed)",
     "founded": null,
     "funders": [],
-    "keyProjects": [],
+    "keyProjects": [
+      {
+        "name": "Checks and Balances",
+        "url": "https://checks-and-balances.ai"
+      }
+    ],
     "logoDomain": "effectiveinstitutionsproject.org",
     "depthRing": "core"
   },
@@ -3870,6 +3875,36 @@
       }
     ],
     "logoDomain": "rethinkpriorities.org",
+    "depthRing": "adjacent"
+  },
+  {
+    "slug": "sapiens-first",
+    "name": "Sapiens First",
+    "website": "https://sapiensfirst.org/",
+    "category": "policy-advocacy",
+    "region": "governance-grove",
+    "tagline": "Campaigning for public control of AI policy",
+    "description": "Sapiens First is a US advocacy organization founded in May 2026 by Rohan Prasad, previously Operations Coordinator at Constellation Institute; his blog says he moved from its technical-alignment focus to political organizing, believing political institutions are the root problem. It calls itself \"the movement to put the power of AI in the hands of the people,\" organized around three pillars: Democratic Renewal, Common Prosperity, and A Secure Future. Its platform is a self-described early draft of twelve policies: mass-surveillance bans, limits on AI-industry election influence, citizens' assemblies, and a China-treaty \"Stop the AI Arms Race\" plank. Its method is community organizing and non-violent direct action -- an \"Outside Game\" against the petitions and lobbying of the \"Inside Game\" -- sequenced through \"Seed Cities,\" state campaigns, and a national push by 2030.",
+    "aiDemocracyAngle": "Treats AI governance as something won through mass politics, not expert policy work. Democracy as one central factor.",
+    "focusTags": [
+      "grassroots organizing",
+      "direct action",
+      "movement building",
+      "citizens' assemblies",
+      "state-level campaigns"
+    ],
+    "location": "United States",
+    "founded": 2026,
+    "funders": [],
+    "keyProjects": [
+      {
+        "name": "Policy platform",
+        "url": "https://sapiensfirst.org/policy",
+        "note": "Self-described early draft of twelve policies across its three pillars"
+      }
+    ],
+    "logoDomain": "sapiensfirst.org",
+    "logoUrl": "/api/uploads/u_858cb819c302d1114329acd9.webp",
     "depthRing": "adjacent"
   },
   {
