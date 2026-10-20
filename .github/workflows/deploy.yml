@@ -7,8 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Skips instead of red-failing until the Cloudflare account is provisioned.
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -23,6 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: bun ci
+
+      - name: Fetch and optimize logos
+        run: bun run fetch-logos && bun run optimize-logos
 
       - name: Build frontend
         run: bun run build
