@@ -17,6 +17,9 @@ worker-dev:
 	cd worker && npx wrangler dev
 
 # Mirrors .github/workflows/deploy.yml.
+# `wrangler deploy` fails with 10034 (workers.dev subdomain call); the versions API skips it.
+# Routes and cron triggers are not applied this way; they persist on the script.
 deploy-cf: build
 	cd worker && npx wrangler d1 execute ai4democracy --remote --yes --file=schema.sql
-	cd worker && npx wrangler deploy
+	cd worker && id=$$(npx wrangler versions upload 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | sed -n 's/.*Worker Version ID: \([0-9a-f-]*\).*/\1/p') && \
+		test -n "$$id" && npx wrangler versions deploy "$$id@100%" --yes
