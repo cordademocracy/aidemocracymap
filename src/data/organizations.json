@@ -94,13 +94,13 @@
       }
     ],
     "logoDomain": "adalovelaceinstitute.org",
-    "depthRing": "core"
+    "depthRing": "adjacent"
   },
   {
     "slug": "ai-and-democracy-foundation",
     "name": "AI & Democracy Foundation",
     "website": "https://ai-democracy.org/",
-    "category": "research",
+    "category": "community",
     "region": "deliberation-delta",
     "tagline": "Governance innovation organization on deliberative democracy for AI governance",
     "description": "The AI & Democracy Foundation (AIDF) is a governance innovation organization founded in 2024 by Aviv Ovadya. Its stated mission is to make trustworthy democratic processes for decisions in the public interest available and empowered when needed. It focuses on representative deliberations such as citizens' assemblies. Its work has three pillars, which are strategy to identify gaps in democratic systems, capacity-building to supply systems that fill those gaps, and adoption to increase demand for them. AIDF maintains the Democracy Levels framework, published at ICML 2025, and the ARIA-funded Democratic Capabilities Gap Map. With DemocracyNext it co-coordinates the DelibTech Network, which launched in September 2025.",
@@ -249,7 +249,7 @@
     "name": "AI Objectives Institute (AOI)",
     "website": "https://ai.objectives.institute/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Nonprofit lab building open tools for collective decision-making with AI",
     "description": "The AI Objectives Institute (AOI) is a nonprofit research lab founded in 2021 by the late Peter Eckersley. It studies how large-scale systems such as AI, markets and bureaucracies can be built around human objectives with broad public input. Its work areas are governance with AI, the economics of transformative AI, human disempowerment and structural risk, and the AI supply chain. AOI developed Talk to the City, an open-source tool that uses large language models to analyze qualitative public input and group it into clusters of opinion. The tool has been used in consultations, including a collaboration with Taiwan's Ministry of Digital Affairs. In May 2026 the Future of Life Institute recommended a $206,000 grant for AOI's work with labor unions using the tool.",
     "aiDemocracyAngle": "Talk to the City analyzes large volumes of public input so decision-makers can see the range of opinions in a population. AOI also co-authored research on gradual disempowerment, which examines how AI could reduce human influence over institutions such as states.",
@@ -559,7 +559,7 @@
     "slug": "berkman-klein-center-applied-social-media-lab",
     "name": "Berkman Klein Center — Applied Social Media Lab",
     "website": "https://cyber.harvard.edu/",
-    "category": "research",
+    "category": "tools",
     "region": "deliberation-delta",
     "tagline": "Harvard lab for public-interest social technology and deliberation tools",
     "description": "The Berkman Klein Center for Internet & Society is a research center at Harvard University in Cambridge, Massachusetts. It took the name Berkman Center in 1998, added Klein in 2016, and works on platform governance, AI, privacy and democracy. The Applied Social Media Lab (ASML), an engineering lab within the center, was announced in October 2023 with an eight-figure donation from Frank McCourt and Project Liberty and launched in June 2024 as an offshoot of the Institute for Rebooting Social Media. The lab brought technologists and practitioners together to build open-source tools for transparency, user control, interoperability and safety. Its projects included Frankly, a video discussion platform released under an AGPL license in April 2025, and NextSpace, which uses large language model agents in live events. ASML completed its experimental phase in June 2026, and several projects continue in other forms.",
@@ -595,8 +595,8 @@
     "slug": "bertelsmann-stiftung-upgrade-democracy",
     "name": "Bertelsmann Stiftung — Upgrade Democracy",
     "website": "https://upgradedemocracy.de",
-    "category": "research",
-    "region": "backsliding-bay",
+    "category": "policy-advocacy",
+    "region": "governance-grove",
     "tagline": "Bertelsmann Stiftung project on disinformation, platforms and digital democracy",
     "description": "Upgrade Democracy is a project of the Bertelsmann Stiftung, a foundation based in Gütersloh, Germany, that was established in 1977. The project started in late 2022 and works with international actors on responses to disinformation, platform governance and the use of digital tools to strengthen democracy. Between 2023 and 2024 it commissioned a six-part international research series titled Countering Disinformation, Strengthening Democracy. In September 2024 the foundation held a conference in Berlin with about 130 experts from 25 countries and published the paper Time to Act: Countering Disinformation for Stronger Democracies, which sets out ten recommendations. A March 2024 paper by Thorsten Thiel and Susanne Kailitz in its Visions series examined generative AI and political opinion formation.",
     "aiDemocracyAngle": "The project examines how generative AI changes the production of information and the formation of public opinion. This sits within a wider agenda on disinformation and platform governance.",
@@ -711,7 +711,7 @@
     "name": "Carnegie Endowment for International Peace",
     "website": "https://carnegieendowment.org",
     "category": "research",
-    "region": "backsliding-bay",
+    "region": "research-range",
     "tagline": "Think tank whose programs study democracy, information integrity and AI",
     "description": "The Carnegie Endowment for International Peace is a think tank founded in 1910 and based in Washington, DC. Its Democracy, Conflict, and Governance Program studies democratic resilience. The Information Environment Project, directed by Alicia Wanless, builds on the Partnership for Countering Influence Operations (PCIO). PCIO engaged more than 1,000 stakeholders, worked with Princeton University's Empirical Studies of Conflict Project on measurement research, and established the Influence Operations Researchers' Guild. The Technology and International Affairs Program published 'AI Agents and Democratic Resilience' by Seth Lazar and Mariano-Florentino Cuéllar in September 2025. Carnegie also published 'AI and Democracy: Mapping the Intersections' by Rachel George and Ian Klaus in January 2026.",
     "aiDemocracyAngle": "The Information Environment Project works on evidence-informed policy for the information environment, which includes influence operations. Carnegie publications examine how AI affects elections, citizen deliberation, government services and social cohesion, and how AI agents interact with democratic institutions.",
@@ -789,7 +789,7 @@
     "name": "Center for an Informed Public (University of Washington)",
     "website": "https://www.cip.uw.edu",
     "category": "research",
-    "region": "backsliding-bay",
+    "region": "research-range",
     "tagline": "University of Washington research center on misinformation and information environments",
     "description": "The Center for an Informed Public (CIP) is a research center at the University of Washington in Seattle. It was announced in July 2019 with a $5 million grant from the Knight Foundation and a $600,000 award from the Hewlett Foundation, and it launched in December 2019. Its stated mission is to resist strategic misinformation, promote an informed society and strengthen democratic discourse. CIP researchers study how rumors and false claims spread online, including election rumors, and publish rapid analyses during election periods. The center also works on AI topics such as chatbots, AI-paraphrased information and AI literacy for high school classrooms. With the Stanford Internet Observatory, CIP co-led the Election Integrity Partnership, which tracked election misinformation in 2020 and 2022 and ended after the 2022 election.",
     "aiDemocracyAngle": "CIP studies how election rumors and other misinformation spread online. Its recent work also covers AI chatbots, AI-paraphrased information and AI literacy teaching in high schools.",
@@ -826,7 +826,7 @@
     "name": "Center for Democracy & Technology (CDT)",
     "website": "https://cdt.org",
     "category": "policy-advocacy",
-    "region": "backsliding-bay",
+    "region": "governance-grove",
     "tagline": "Digital rights nonprofit with an AI Governance Lab and an Elections & Democracy team",
     "description": "The Center for Democracy & Technology (CDT) is a nonprofit based in Washington, DC, founded in 1994, with a European office in Brussels. It works on digital rights, including privacy, free expression and government surveillance. CDT's AI Governance Lab, launched in 2023 and directed by Miranda Bogen, develops technically informed approaches to the regulation and governance of AI systems. Its Elections & Democracy team researches how AI affects elections, including campaign uses, deepfakes and the accuracy of voting information from chatbots. In a 2024 report with Proof News, CDT tested five chatbots on voting with a disability, and 61 percent of responses had at least one type of insufficiency. In July 2024 CDT published 'Election Integrity Recommendations for Generative AI Developers'.",
     "aiDemocracyAngle": "CDT's AI Governance Lab works on the regulation and auditing of AI systems. Its Elections & Democracy team tests chatbots on election information and has published election integrity recommendations for generative AI developers.",
@@ -904,7 +904,7 @@
     "slug": "centre-for-international-governance-innovation-cigi",
     "name": "Centre for International Governance Innovation (CIGI)",
     "website": "https://www.cigionline.org",
-    "category": "policy-advocacy",
+    "category": "research",
     "region": "governance-grove",
     "tagline": "Waterloo think tank on the governance of AI, data and digital technology",
     "description": "The Centre for International Governance Innovation (CIGI) is an independent, non-partisan think tank headquartered in Waterloo, Canada, and founded in 2001. It publishes peer-reviewed research and policy analysis on the governance of data and transformative technologies, including AI. Its 2025 to 2030 strategic plan includes AI and transformative technology and digitalization, security and democracy among its four research areas. In 2025, CIGI experts took part in the policy phase of Canada's Public Inquiry into Foreign Interference in Federal Electoral Processes and Democratic Institutions. Its AI publications include a 2024 paper on the concentration of AI innovation and commentary on AI-enabled disinformation.",
@@ -1229,8 +1229,8 @@
     "slug": "cooperative-ai-foundation",
     "name": "Cooperative AI Foundation",
     "website": "https://www.cooperativeai.com",
-    "category": "research",
-    "region": "cooperation-cove",
+    "category": "funder",
+    "region": "funding-forest",
     "tagline": "UK charity funding research on cooperation between AI agents",
     "description": "The Cooperative AI Foundation (CAIF) is a charity registered in England and Wales in December 2022 and based in Exeter. It supports research on how AI agents deployed by different actors can cooperate and avoid coordination failures. Its programmes include research grants, an annual PhD fellowship, a summer school and an eight-week online course called Introduction to Cooperative AI. Its first major grant, of $500,000, went to the Foundations of Cooperative AI Lab at Carnegie Mellon University. CAIF launched a $10 million funding call on multi-agent safety with Schmidt Sciences, Google DeepMind and ARIA, and it appointed Brigit Goebelbecker as chief executive from October 2026. Its trustees include Thore Graepel of Google DeepMind and Audrey Tang, a former digital minister of Taiwan.",
     "aiDemocracyAngle": "CAIF hosted a workshop on the future of AI for democracy that examined how AI could strengthen democratic decision-making. Audrey Tang, who worked on digital democracy in Taiwan, sits on its board of trustees.",
@@ -1266,14 +1266,14 @@
       }
     ],
     "logoDomain": "cooperativeai.com",
-    "depthRing": "core"
+    "depthRing": "adjacent"
   },
   {
     "slug": "corda-democracy-fellowship",
     "name": "CORDA",
     "website": "https://cordademocracy.org/",
     "category": "research",
-    "region": "voting-village",
+    "region": "research-range",
     "tagline": "Non-profit building open-source tool & research for democracy in the age of AI",
     "description": "CORDA is a non-profit, open-source organization with the mission to research, build and scale the future of democracy. Its flagship program, the CORDA Democracy Fellowship, runs recurring part-time remote cohorts of about eight weeks (inaugural cohort Spring 2026, roughly 8-10 hours per week). Fellows from research, engineering, product, design, policy, law and communications advance concrete projects with mentorship, clustered around themes like democratic health, collective reasoning and deliberation, election-information tooling, and AI governance. The fellowship is unpaid, awards prizes for outstanding projects, and aims at deployable tools rather than pure academic research. CORDA also maintains this map.",
     "aiDemocracyAngle": "Channels part-time talent into deployable AI-for-democracy tools and maintains this ecosystem map. Concentrates effort on a neglected, high-leverage space: using AI to strengthen elections, deliberation, and democratic institutions.",
@@ -1540,7 +1540,7 @@
     "slug": "democracynext",
     "name": "DemocracyNext",
     "website": "https://www.demnext.org/",
-    "category": "research",
+    "category": "policy-advocacy",
     "region": "deliberation-delta",
     "tagline": "Research and action institute for permanent citizens' assemblies",
     "description": "DemocracyNext is a non-partisan research and action institute for citizens' assemblies. Claudia Chwalisz founded it in Paris in September 2022, and she had led the OECD's programme on Innovative Citizen Participation since 2018. The institute aims to scale high-quality, empowered and permanent citizens' assemblies built on sortition, deliberation and rotation. It is incorporated as a foundation in The Hague and has worked with more than 30 public authorities, universities, museums and companies. In September 2025 it launched the Deliberation and Technology (DelibTech) Network with the AI & Democracy Foundation. In July 2026 it published the paper Deliberative Muscles & AI.",
@@ -1640,7 +1640,7 @@
     "name": "Digital Forensic Research Lab (DFRLab), Atlantic Council",
     "website": "https://dfrlab.org",
     "category": "research",
-    "region": "backsliding-bay",
+    "region": "integrity-inlet",
     "tagline": "Atlantic Council lab investigating disinformation and influence operations",
     "description": "The Digital Forensic Research Lab (DFRLab) was incubated at the Atlantic Council in 2016 and is based in Washington, DC. It has conducted more than 1,000 open-source investigations into influence operations and emerging digital threats. Its research covers disinformation, election interference and digital rights. In 2025 it developed and delivered the G7 Rapid Response Mechanism Digital Transnational Repression Detection Academy with RRM Canada. The Academy trains analysts to identify and counter AI-enabled surveillance, manipulation and harassment. The Atlantic Council's Democracy + Tech Initiative develops policy practices that align technology and governance with open societies.",
     "aiDemocracyAngle": "Investigates influence operations and digital threats to democracies. Its 2025 G7 Detection Academy trains analysts to counter AI-enabled surveillance, manipulation and harassment.",
@@ -1674,7 +1674,7 @@
     "name": "Effective Institutions Project",
     "website": "https://effectiveinstitutionsproject.org",
     "category": "research",
-    "region": "cooperation-cove",
+    "region": "research-range",
     "tagline": "Philanthropic advisory and research on institutions and AI governance",
     "description": "The Effective Institutions Project (EIP) is a philanthropic advisory and research organization based in the United States. It began in 2021 as the Improving Institutional Decision-Making Working Group, founded by Ian David Moss, and incorporated as a nonprofit in 2023. Its areas of expertise are governance of transformative AI, institutional resilience and accountability, reducing risks from great power conflict, and protecting against pandemics. EIP advises donors on funding in these areas and publishes research on institutional decision-making. In mid-2026 it launched the Checks and Balances in an Automated Society request for proposals with the Collective Intelligence Project. The RFP, now closed to submissions, sought work on oversight of AI in government, election security and AI tools for citizen reasoning.",
     "aiDemocracyAngle": "Runs the Checks and Balances in an Automated Society RFP with the Collective Intelligence Project, which funds work on AI-era democratic oversight, election security and collective reasoning. Advises donors on the governance of transformative AI.",
@@ -1766,7 +1766,7 @@
       }
     ],
     "logoDomain": "disinfo.eu",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "euandi",
@@ -1840,7 +1840,7 @@
     "slug": "fide-federation-for-innovation-in-democracy",
     "name": "FIDE — Federation for Innovation in Democracy",
     "website": "https://fidemocracy.org/",
-    "category": "policy-advocacy",
+    "category": "community",
     "region": "deliberation-delta",
     "tagline": "Federation supporting governments in designing and evaluating citizens' assemblies",
     "description": "FIDE (Federation for Innovation in Democracy) is an independent, nonpartisan federation of democratic innovators with offices in Brussels and Washington, DC. It supports governments and practitioners in running citizens' assemblies and other deliberative processes. Its work covers training, process design and evaluation. It promotes permanent assemblies such as the Ostbelgien model in East Belgium and has published a policy note on the Assemblée Citoyenne de Paris. It has supported communities in Ukraine, evaluated assemblies in Canada and launched a program for US state governors in 2026.",
@@ -2171,7 +2171,7 @@
     "name": "g0v (gov-zero)",
     "website": "https://g0v.tw/intl/en/",
     "category": "community",
-    "region": "deliberation-delta",
+    "region": "cooperation-cove",
     "tagline": "Decentralized Taiwanese civic-tech community that rebuilds government services in the open",
     "description": "g0v (pronounced 'gov-zero') is a decentralized, volunteer-driven civic-tech community founded in Taiwan in 2012. Its core values are information transparency, open source and open collaboration. The name replaces the 'o' in 'gov' with a zero, and its method is to fork government by rebuilding official datasets and services as open-source projects. It holds a large hackathon about every two months, and over 60 percent of participants do not come from a technical background. More than 40 hackathons have drawn over 8,000 contributors. Projects that grew out of the community include vTaiwan, a policy deliberation process that uses Polis, and Cofacts, a crowdsourced fact-checking chatbot on LINE.",
     "aiDemocracyAngle": "Hosts open-source civic projects in Taiwan, including vTaiwan for online policy deliberation and Cofacts for crowdsourced fact-checking, which maintains an AI code repository.",
@@ -2199,7 +2199,7 @@
     "slug": "global-disinformation-index",
     "name": "Global Disinformation Index",
     "website": "https://www.disinformationindex.org",
-    "category": "tools",
+    "category": "research",
     "region": "integrity-inlet",
     "tagline": "Not-for-profit that researches the funding of online disinformation",
     "description": "The Global Disinformation Index (GDI) is a not-for-profit organization based in London. Clare Melford and Daniel Rogers founded it in 2018. It produced disinformation risk ratings for news and information sites using AI and human review, and passed them to advertising networks so advertisers could avoid placing ads on high-risk sites. GDI now describes its mission as mapping the revenues that sustain harmful content online and building an evidence base for governments, policymakers and industry. Recent reports cover digital sovereignty in Europe, the Estonian presidential election and the use of large language models to spread Russian state narratives. Its methodology has drawn criticism, including allegations of political bias, and some funders ended their support in 2023.",
@@ -2223,7 +2223,7 @@
     "name": "The GovLab (The Governance Lab)",
     "website": "https://thegovlab.org",
     "category": "research",
-    "region": "cooperation-cove",
+    "region": "research-range",
     "tagline": "Research group on governing through technology, data and collective intelligence",
     "description": "The Governance Lab (GovLab) is a research organization founded in 2012 by Beth Simone Noveck at the NYU Tandon School of Engineering. It is now affiliated with Northeastern University, where Noveck also directs the Burnes Center for Social Change. The GovLab studies how technology, data and collective intelligence can support more effective and legitimate governance. Its projects include CrowdLaw, Data Collaboratives, Responsible Data for Children, the Observatory of Public Sector AI and InnovateUS, a training platform for public servants. With the Burnes Center it publishes Reboot Democracy, which carries weekly writing on AI, democracy and governing in the public interest. Noveck previously served as Chief AI Strategist for New Jersey and published the book Reboot: AI and the Race to Save Democracy in 2026.",
     "aiDemocracyAngle": "Researches and publishes on how AI and collective intelligence can support democratic institutions, mainly through Reboot Democracy and the Observatory of Public Sector AI.",
@@ -2291,7 +2291,7 @@
     "name": "Harvard Ash Center — Allen Lab for Democracy Renovation & GETTING-Plurality",
     "website": "https://ash.harvard.edu/programs/allen-lab-for-democracy-renovation/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Harvard Kennedy School lab on democracy renovation and technology governance",
     "description": "The Allen Lab for Democracy Renovation is a program of the Ash Center at Harvard Kennedy School, led by Danielle Allen. It joined the Ash Center's flagship programs in 2023 and works on modernizing constitutional democracy for large, digitally connected societies. The lab holds that democracy should shape how all public policy is designed and evaluated. It hosts the GETTING-Plurality research network, short for Governance of Emerging Technology and Technology Innovations for Next-Generation Governance. The network links philosophers, social scientists, computer scientists, legal scholars and technologists who study how emerging technology, including AI, can be governed and built to respect pluralism. Its outputs include a technology governance roadmap on power-sharing liberalism.",
     "aiDemocracyAngle": "The GETTING-Plurality network studies how AI and other emerging technologies can be governed and designed to respect pluralism. It aims to inform policy and industry standards with academic research.",
@@ -2318,7 +2318,7 @@
       }
     ],
     "logoDomain": "ash.harvard.edu",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "hewlett-foundation",
@@ -2485,7 +2485,7 @@
       }
     ],
     "logoDomain": "integrityinstitute.org",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "intelligence-curse",
@@ -2521,7 +2521,7 @@
     "name": "interface (formerly Stiftung Neue Verantwortung)",
     "website": "https://www.interface-eu.org",
     "category": "policy-advocacy",
-    "region": "backsliding-bay",
+    "region": "governance-grove",
     "tagline": "Berlin think tank on technology policy, platform regulation and AI",
     "description": "interface is a European think tank based in Berlin that works on technology and public policy. It was founded in 2008 as Stiftung Neue Verantwortung and took its current name in 2024. Its research is organized in six programmes, including Artificial Intelligence and Platform Regulation. The programme on the digital public sphere and platform regulation examines the Digital Services Act, including transparency rules for content moderation and recommender systems. In October 2026 it published a policy brief on the regulation of ChatGPT under the DSA and the AI Act, after the European Commission designated ChatGPT as a very large online search engine in August 2026. It states that it does not accept funding from companies affected by its policy recommendations.",
     "aiDemocracyAngle": "interface analyzes how the Digital Services Act and the EU AI Act apply to AI systems and platform recommender systems. Its October 2026 policy brief covers the regulation of ChatGPT as a very large online search engine.",
@@ -2559,7 +2559,7 @@
     "name": "International Foundation for Electoral Systems (IFES)",
     "website": "https://www.ifes.org",
     "category": "policy-advocacy",
-    "region": "backsliding-bay",
+    "region": "integrity-inlet",
     "tagline": "Election assistance organization with an information integrity program",
     "description": "The International Foundation for Electoral Systems (IFES) is a nonprofit organization founded in 1987 and based in Arlington, Virginia. It provides technical assistance to election officials and works with civil society, and it reports having worked in 145 countries. Its Information Integrity program addresses disinformation, misinformation and dangerous speech, using the Chain of Harm framework, which divides the problem into five stages from actor to risk. In 2026 IFES published Brave New Ballot, a report on generative AI in election campaigns and political communication, with recommendations for election authorities and policymakers. It also established the AI Advisory Group on Elections, which is drafting a Strategic Playbook on AI and Elections. For the 2022 Kenyan general election, IFES and the Independent Electoral and Boundaries Commission developed an AI-based hate speech monitoring tool covering English, Kiswahili and Sheng.",
     "aiDemocracyAngle": "IFES publishes research on generative AI in election campaigns and convenes the AI Advisory Group on Elections. It has also deployed an AI-based hate speech monitoring tool with Kenya's election commission.",
@@ -3050,7 +3050,7 @@
       }
     ],
     "logoDomain": "make.org",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "meaning-alignment-institute",
@@ -3095,7 +3095,7 @@
     "name": "Metagov",
     "website": "https://metagov.org/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Nonprofit research laboratory for digital self-governance and public AI",
     "description": "Metagov is a nonprofit research laboratory founded in 2019 out of a Harvard Law School seminar called Governing Virtual Worlds. Joshua Tan and Louis Kang proposed the original idea, and it incorporated as an independent nonprofit in January 2020. Its work is organized around three pillars called Community, Research and Operations. Projects include DAOstar, a standards body for decentralized autonomous organizations, as well as Interoperable Deliberative Tools, PolicyKit and Govbase. The Public AI initiative describes itself as a community of practice developing a new political economy for AI and publishes a newsletter.",
     "aiDemocracyAngle": "Runs the Public AI initiative, a community of practice working on a new political economy for AI. Its other projects build governance tooling and standards for online communities and DAOs.",
@@ -3162,7 +3162,7 @@
     "name": "MIT Center for Collective Intelligence",
     "website": "https://cci.mit.edu/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Research center on how people and computers can think together",
     "description": "The MIT Center for Collective Intelligence (CCI) is a research center at MIT founded in 2006. Its founding director is Thomas Malone. The center asks how people and computers can be connected so that they act more intelligently together than any individual, group or computer has before. Malone's book Superminds describes hierarchies, markets, democracies and communities as groups that produce much of human achievement. CCI studies collective decision-making, prediction and problem-solving. Recent work covers generative AI in creative work, human-AI teams and AI agents in negotiation, and a 2026 study found that human-AI combinations often perform worse in decision-making than the best of humans or AI alone.",
     "aiDemocracyAngle": "CCI treats groups of people and machines as a unit of study and publishes research on human-AI decision-making. Its Superminds framework counts democracies as one form of collective intelligence.",
@@ -3191,7 +3191,7 @@
     "name": "MIT Center for Constructive Communication",
     "website": "https://www.ccc.mit.edu/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "MIT Media Lab center building human-led, AI-assisted tools for collective listening",
     "description": "The MIT Center for Constructive Communication (CCC) is a research center at the MIT Media Lab founded in 2021 and directed by Deb Roy. Roy was Media Lab Executive Director from 2019 before turning to dialogue and communication technology. The center develops human-led, AI-assisted systems for collective listening, understanding and action. It works closely with the nonprofit Cortico, whose conversation-based sensemaking methods appear in many of its projects. CCC research reports that leading AI models perform worse for users with lower English proficiency, less formal education and non-US origins. Its VoiceTrace project builds a provenance architecture that traces how community input reaches policy decisions.",
     "aiDemocracyAngle": "CCC builds AI-assisted sensemaking for facilitated community conversations. Its VoiceTrace project makes the path from community input to policy decisions traceable.",
@@ -3220,7 +3220,7 @@
     "name": "More in Common",
     "website": "https://www.moreincommon.com",
     "category": "research",
-    "region": "cooperation-cove",
+    "region": "research-range",
     "tagline": "Research organization on polarization and social cohesion in Western democracies",
     "description": "More in Common is an international research and think-tank organization founded in 2017. Its name draws on Jo Cox's maiden speech in the UK Parliament. It works to understand and reduce polarization and division in democratic societies, with teams in the United Kingdom, United States, France, Germany, Poland, Spain and Brazil. Its research combines large-scale surveys with social psychology and behavioral science, and it works with partners who can act on the findings. In the United States it published a study of attitudes toward generative AI titled Between Hesitation and Hope, supported by Omidyar Network. The study found similar views among Democrats and Republicans on the role of government and technology companies.",
     "aiDemocracyAngle": "More in Common surveyed American attitudes toward generative AI in Between Hesitation and Hope. It also belongs to the working group behind the Council on Technology and Social Cohesion.",
@@ -3277,7 +3277,7 @@
       }
     ],
     "logoDomain": "mozillafoundation.org",
-    "depthRing": "core"
+    "depthRing": "adjacent"
   },
   {
     "slug": "mysociety",
@@ -3366,7 +3366,7 @@
     "slug": "nesta-centre-for-collective-intelligence-design",
     "name": "Nesta Centre for Collective Intelligence Design",
     "website": "https://www.nesta.org.uk/centre-for-collective-intelligence/",
-    "category": "research",
+    "category": "tools",
     "region": "deliberation-delta",
     "tagline": "Nesta unit that designs public engagement combining human and machine intelligence",
     "description": "The Centre for Collective Intelligence (CCI) is a unit of Nesta, the UK innovation foundation, based in London. Nesta launched it in 2018 as the Centre for Collective Intelligence Design. The centre designs deliberative engagements and builds digital tools that use technology, AI, arts and design to scale public engagement. It published the Collective Intelligence Design Playbook and developed the Zeitgeist deliberation platform, which has been used on topics from climate adaptation to AI governance. With the UK Government's Incubator for AI it developed the AI Social Readiness Assessment, a method for giving the public a say in how technology is deployed in public services. Earlier work included three rounds of grants of up to 30,000 pounds for collective intelligence experiments and the Collective Crisis Intelligence project from 2021 to 2022, which involved frontline communities in designing AI tools for humanitarian response.",
@@ -3399,7 +3399,7 @@
       }
     ],
     "logoDomain": "nesta.org.uk",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "new-america-political-reform",
@@ -3464,7 +3464,7 @@
     "name": "Odyssean Institute",
     "website": "https://www.odysseaninstitute.org/",
     "category": "research",
-    "region": "governance-grove",
+    "region": "research-range",
     "tagline": "UK charity combining computational foresight with citizens' assemblies on global risks",
     "description": "The Odyssean Institute is a UK-registered charity (number 1204794) founded in 2022 by Giuseppe Dal Prá. It combines computational foresight with participatory deliberation to support decision-making on global catastrophic risks. Its Odyssean Process, developed in 2023, joins expert horizon scanning, decision-making under deep uncertainty and citizens' assemblies. The first Process addresses AI regulation in the UK. It began in February 2026 with an expert horizon scan that identified 18 top-ranked AI risks and continues with a National Citizens' Assembly of 100 representative citizens, scheduled to meet in person in Manchester from 27 to 29 November 2026. Other projects include GRAIN, the Global Resilient Anticipatory Infrastructure Network, and Resilient Supply Chains.",
     "aiDemocracyAngle": "Its first Odyssean Process applies expert foresight and a national citizens' assembly of 100 people to AI regulation in the UK. The assembly is to produce principles and policy recommendations on emerging AI risks.",
@@ -3560,7 +3560,7 @@
       }
     ],
     "logoDomain": "omidyar.com",
-    "depthRing": "core"
+    "depthRing": "adjacent"
   },
   {
     "slug": "openvaa",
@@ -3603,7 +3603,7 @@
     "name": "Oxford Internet Institute — Programme on Democracy & Technology",
     "website": "https://demtech.oii.ox.ac.uk",
     "category": "research",
-    "region": "backsliding-bay",
+    "region": "research-range",
     "tagline": "Oxford Internet Institute research programme on computational propaganda",
     "description": "The Programme on Democracy and Technology (DemTech) is a research group at the University of Oxford's Internet Institute, directed by Philip Howard. It has operated since 2012 and was previously known as the Computational Propaganda Project. The group studies the use of algorithms, automation and bots in political communication, using computational, quantitative and qualitative methods. Its European Research Council funded project on computational propaganda ran from 2015 to 2020. In January 2021 it published Industrialized Disinformation, the 2020 Global Inventory of Organized Social Media Manipulation, which found organized manipulation campaigns in 81 countries. The OII project page lists the programme's dates as January 2012 to August 2025.",
     "aiDemocracyAngle": "DemTech studies how bots, algorithms and automation are used to manipulate public opinion. Its director Philip Howard co-authored a 2025 report on generative AI in the 2024 elections for the International Panel on the Information Environment.",
@@ -3704,7 +3704,7 @@
       }
     ],
     "logoDomain": "mcgovern.org",
-    "depthRing": "core"
+    "depthRing": "adjacent"
   },
   {
     "slug": "people-powered-global-hub-for-participatory-democracy",
@@ -3779,7 +3779,7 @@
     "name": "Plurality Institute",
     "website": "https://www.plurality.institute/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Research hub for technology that supports cooperation across social difference",
     "description": "The Plurality Institute is a 501(c)(3) nonprofit in the United States, co-founded by E. Glen Weyl and Rose Bloomin. It connects researchers in computer science, political science, philosophy and peace studies with industry and government on technology for human cooperation across social difference. Its steering committee includes Audrey Tang, Danielle Allen, Glen Weyl, Lisa Schirch and Michael Jordan. Projects include BridgingBot, an AI moderator for social media developed with Harvard, UC Berkeley, Jigsaw and Google.org, and an LLM Map of more than 70 tools that use language models for public discourse, launched in February 2025. It also helped launch OpenBallot, an app for comparing ballot recommendations from trusted sources, and awards research micro-grants.",
     "aiDemocracyAngle": "The institute maintains an LLM Map of more than 70 tools that use language models in public discourse and developed BridgingBot, an AI social media moderator. It also helped launch OpenBallot, a voter guide comparison tool.",
@@ -3933,7 +3933,7 @@
     "slug": "radicalxchange",
     "name": "RadicalxChange",
     "website": "https://www.radicalxchange.org/",
-    "category": "policy-advocacy",
+    "category": "community",
     "region": "deliberation-delta",
     "tagline": "Nonprofit and global network developing plural voting and funding mechanisms",
     "description": "RadicalxChange (RxC) is a 501(c)(3) nonprofit and global community founded in 2018 by economist E. Glen Weyl after the publication of Radical Markets. It develops and tests participatory governance mechanisms, including quadratic voting, quadratic funding, data coalitions and citizen assemblies. It supports local chapters in more than 30 cities and runs monthly salons and a podcast. Weyl co-authored the book Plurality with Audrey Tang and others, and RxC uses it as a guiding framework. Its AI projects include work with Indonesian newsrooms and OpenMined on AI and journalism, a project with faith leaders titled Can AI see me, and principles on AI governance delivered to the United Nations.",
@@ -3962,7 +3962,7 @@
       }
     ],
     "logoDomain": "radicalxchange.org",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "remesh",
@@ -3991,7 +3991,7 @@
       }
     ],
     "logoDomain": "remesh.ai",
-    "depthRing": "adjacent"
+    "depthRing": "broad"
   },
   {
     "slug": "reset-tech",
@@ -4233,7 +4233,7 @@
     "name": "Stanford Deliberative Democracy Lab",
     "website": "https://deliberation.stanford.edu/",
     "category": "research",
-    "region": "deliberation-delta",
+    "region": "research-range",
     "tagline": "Stanford lab behind Deliberative Polling and an online deliberation platform",
     "description": "The Deliberative Democracy Lab is a research center at Stanford University directed by James Fishkin, who developed the Deliberative Polling method. It was established in 2003 as the Center for Deliberative Democracy and was renamed in 2022 when it joined the Center on Democracy, Development and the Rule of Law. Deliberative Polling brings a random sample of the public together for informed discussion and measures how opinions change. The lab has run more than 150 such experiments in over 50 countries and jurisdictions. With Stanford's Crowdsourced Democracy Team it built the Stanford Online Deliberation Platform, a video platform for small-group discussions with an automated moderator that manages speaking queues, timed agendas and equal participation. The lab also runs deliberative forums on AI, including Community Forums with Meta and a 2025 industry-wide forum on AI agents.",
     "aiDemocracyAngle": "It uses an automated moderator to run small-group deliberation at scale. It also convenes representative public forums that give technology companies input on AI products such as AI agents.",
@@ -4260,7 +4260,7 @@
       }
     ],
     "logoDomain": "deliberation.stanford.edu",
-    "depthRing": "core"
+    "depthRing": "broad"
   },
   {
     "slug": "stiftung-mercator",
@@ -4451,7 +4451,7 @@
     "slug": "vtaiwan",
     "name": "vTaiwan",
     "website": "https://info.vtaiwan.tw/",
-    "category": "tools",
+    "category": "community",
     "region": "deliberation-delta",
     "tagline": "Taiwanese consultation process combining Pol.is deliberation with LLM tools",
     "description": "vTaiwan is a consultation process in Taiwan that combines online deliberation with in-person meetings to develop recommendations on national policy. Launched in 2014, it emerged from the Sunflower Movement and the g0v civic-tech community and involves government ministries. The process uses the Pol.is platform to collect statements and group participants by voting patterns, which shows where opinion groups agree. Its first major case in 2015 concerned the regulation of Uber and ride-hailing. By August 2018 the process had been used in 26 cases, and its website reported decisive government action in 80 percent of them. In 2023 vTaiwan joined Chatham House and the AI Objectives Institute on the Recursive Public pilot, funded under OpenAI's Democratic Inputs to AI program, which tested large language models for summarizing deliberation results.",
