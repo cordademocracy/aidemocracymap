@@ -52,7 +52,7 @@ export function MapPage() {
   // stable children identity so memo(IslandMap) doesn't re-render all nodes
   // when MapPage re-renders for reasons unrelated to selection (e.g. addOpen)
   const tooltip = useMemo(
-    () => (selection ? <OrgTooltip selection={selection} onClose={() => handleSelect(null)} /> : null),
+    () => (selection ? <OrgTooltip key={selection.org.slug} selection={selection} onClose={() => handleSelect(null)} /> : null),
     [selection, handleSelect]
   );
 
