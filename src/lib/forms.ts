@@ -110,6 +110,8 @@ export function useFormDialog({
         e.preventDefault();
         requestClose();
       },
+      // Browsers force-close after repeated prevented cancels; keep React in step.
+      onClose,
       onMouseDown: (e: MouseEvent<HTMLDialogElement>) => {
         const box = dialogRef.current?.getBoundingClientRect();
         pressedBackdrop.current =

@@ -260,8 +260,8 @@ export const IslandMap = memo(function IslandMap({
         if (!isEditDragging() && !moved && (e.target as Element).tagName === "svg") clearSelection();
         return;
       }
-      // click on empty ocean closes the tooltip
-      if (!moved && (e.target as Element).tagName === "svg") onSelect(null);
+      // a click anywhere off a node (ocean or land) closes the tooltip
+      if (!moved && !(e.target as Element).closest("[data-org], .map-hit")) onSelect(null);
     },
     [onSelect, editMode, endMousePan, isEditDragging, clearSelection]
   );

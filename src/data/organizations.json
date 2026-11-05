@@ -34,6 +34,54 @@
     "depthRing": "adjacent"
   },
   {
+    "slug": "access-now",
+    "name": "Access Now",
+    "website": "https://www.accessnow.org",
+    "category": "policy-advocacy",
+    "region": "backsliding-bay",
+    "tagline": "Digital rights organization pressing for binding, rights-based rules on AI",
+    "description": "Access Now is a digital rights organization with its main office in New York. Brett Solomon co-founded it with three others in 2009 after the contested Iranian presidential election. It runs the Digital Security Helpline and the RightsCon summit, and its #KeepItOn coalition campaigns against internet shutdowns, including during elections. On AI it advocates for rights-based rules, and in June 2026 it joined EDRi, ECNL and Amnesty International in asking the European Parliament to reject the final AI Omnibus agreement.",
+    "aiDemocracyAngle": "Argues for binding AI rules grounded in human rights law, including under the EU AI Act. A 2026 article on openness in AI development says that concentrated AI capabilities threaten democratic accountability.",
+    "focusTags": [
+      "digital rights",
+      "AI regulation",
+      "internet shutdowns",
+      "surveillance",
+      "digital security"
+    ],
+    "location": "New York, NY, USA",
+    "founded": 2009,
+    "funders": [
+      "Ford Foundation",
+      "Luminate Group",
+      "Open Society Foundations"
+    ],
+    "keyProjects": [
+      {
+        "name": "Artificial intelligence (policy work)",
+        "url": "https://www.accessnow.org/artificial-intelligence/",
+        "note": "AI Act, surveillance and governance positions"
+      },
+      {
+        "name": "Openness in AI development",
+        "url": "https://www.accessnow.org/openness-in-ai-development/",
+        "note": "October 2026 article on concentration of AI capabilities"
+      },
+      {
+        "name": "#KeepItOn",
+        "url": "https://www.accessnow.org/campaign/keepiton/",
+        "note": "Coalition against internet shutdowns, with an election watch"
+      },
+      {
+        "name": "RightsCon",
+        "url": "https://rightscon.org",
+        "note": "Summit on human rights in the digital age"
+      }
+    ],
+    "logoDomain": "accessnow.org",
+    "depthRing": "broad"
+  },
+  {
     "slug": "acs-research-group-alignment-of-complex-systems",
     "name": "ACS Research Group (Alignment of Complex Systems)",
     "website": "https://acsresearch.org",
@@ -1274,29 +1322,44 @@
     "website": "https://cordademocracy.org/",
     "category": "research",
     "region": "research-range",
-    "tagline": "Non-profit building open-source tool & research for democracy in the age of AI",
-    "description": "CORDA is a non-profit, open-source organization with the mission to research, build and scale the future of democracy. Its flagship program, the CORDA Democracy Fellowship, runs recurring part-time remote cohorts of about eight weeks (inaugural cohort Spring 2026, roughly 8-10 hours per week). Fellows from research, engineering, product, design, policy, law and communications advance concrete projects with mentorship, clustered around themes like democratic health, collective reasoning and deliberation, election-information tooling, and AI governance. The fellowship is unpaid, awards prizes for outstanding projects, and aims at deployable tools rather than pure academic research. CORDA also maintains this map.",
-    "aiDemocracyAngle": "Channels part-time talent into deployable AI-for-democracy tools and maintains this ecosystem map. Concentrates effort on a neglected, high-leverage space: using AI to strengthen elections, deliberation, and democratic institutions.",
+    "tagline": "Research and open-source tools for democracy in the age of AI",
+    "description": "CORDA is a non-profit that researches, builds and scales tools for democracy in the age of AI. Its projects cover AI governance, information integrity, elections, deliberation and money in politics. They include a Democratic AI-Readiness Index for 27 countries, Global AI Watch, the ARIA Index on how the US Congress handles AI, and Civic-Evals, which tests how reliably language models answer voting and election questions. Most of this work comes out of the CORDA Democracy Fellowship, a part-time remote program whose first cohort ran in spring 2026. CORDA also maintains this map.",
+    "aiDemocracyAngle": "Measures where AI puts democracies at risk (readiness indices, model evaluations, lobbying and Super PAC data) and builds open-source tools for deliberation and elections.",
     "focusTags": [
-      "fellowship",
-      "AI-democracy",
-      "election-tools",
-      "citizen-assemblies",
-      "non-profit"
+      "AI governance",
+      "democratic resilience",
+      "model evaluations",
+      "open source",
+      "fellowship"
     ],
     "location": "Remote / global",
-    "founded": 2024,
+    "founded": null,
     "funders": [],
     "keyProjects": [
       {
+        "name": "Democratic AI-Readiness Index",
+        "url": "https://aiinsocietyhub.com/corda/",
+        "note": "Readiness and backsliding exposure across 27 countries"
+      },
+      {
+        "name": "Global AI Watch",
+        "url": "https://www.globalaiwatch.org/",
+        "note": "World map of who holds power over AI"
+      },
+      {
+        "name": "Civic-Evals",
+        "url": "https://cordademocracy.org/rd/civic-evals",
+        "note": "Open suite testing LLM answers on voting and elections"
+      },
+      {
         "name": "CORDA Democracy Fellowship",
-        "url": "https://cordademocracy.org/",
-        "note": null
+        "url": "https://cordademocracy.org/fellowship",
+        "note": "Part-time remote research and build cohorts"
       },
       {
         "name": "AI4Democracy Map",
         "url": "https://ai4democracy.world/",
-        "note": null
+        "note": "This map"
       }
     ],
     "logoDomain": "cordademocracy.org",
@@ -3158,6 +3221,49 @@
     "depthRing": "broad"
   },
   {
+    "slug": "midas-project",
+    "name": "The Midas Project",
+    "website": "https://www.themidasproject.com",
+    "category": "policy-advocacy",
+    "region": "power-peaks",
+    "tagline": "Watchdog tracking AI company safety policies, governance and political influence",
+    "description": "The Midas Project is a United States nonprofit that monitors AI companies. Tyler Johnston founded it in 2024 and is its executive director. Its Watchtower project tracks changes to company safety policies, and the Seoul Tracker checks whether firms kept commitments made at the 2024 AI Seoul Summit. In June 2025 it published The OpenAI Files with the Tech Oversight Project, a report on OpenAI's governance and leadership. OpenAI subpoenaed the group and Johnston in September 2025 during its litigation with Elon Musk.",
+    "aiDemocracyAngle": "Investigates how AI companies govern themselves and lobby, and publishes the findings for the public and policymakers. Its Model Republic publication reported in April 2026 that a news site linked to the Leading the Future super PAC network sent automated agents posing as journalists to interview people.",
+    "focusTags": [
+      "AI company accountability",
+      "safety policy tracking",
+      "OpenAI governance",
+      "industry political influence"
+    ],
+    "location": "United States",
+    "founded": 2024,
+    "funders": [],
+    "keyProjects": [
+      {
+        "name": "Watchtower",
+        "url": "https://www.themidasproject.com/watchtower",
+        "note": "Tracks changes to AI company safety policies"
+      },
+      {
+        "name": "Model Republic",
+        "url": "https://modelrepublic.org",
+        "note": "Publication on AI industry influence and transparency"
+      },
+      {
+        "name": "The OpenAI Files",
+        "url": "https://openaifiles.org",
+        "note": "Report on OpenAI governance, with the Tech Oversight Project"
+      },
+      {
+        "name": "Seoul Tracker",
+        "url": "https://seoul-tracker.org",
+        "note": "Follow-through on 2024 Seoul Summit commitments"
+      }
+    ],
+    "logoDomain": "themidasproject.com",
+    "depthRing": "adjacent"
+  },
+  {
     "slug": "mit-center-for-collective-intelligence",
     "name": "MIT Center for Collective Intelligence",
     "website": "https://cci.mit.edu/",
@@ -3890,6 +3996,52 @@
     "depthRing": "broad"
   },
   {
+    "slug": "project-liberty",
+    "name": "Project Liberty",
+    "website": "https://www.projectliberty.io",
+    "category": "community",
+    "region": "cooperation-cove",
+    "tagline": "Initiative building open digital infrastructure and funding AI governance research",
+    "description": "Project Liberty is an initiative based in New York that Frank McCourt founded in 2019 to build a more people-controlled internet. Project Liberty Labs develops open infrastructure, including the Frequency network and the Decentralized Social Networking Protocol. The Project Liberty Institute funds research and policy work with universities including Stanford and Georgetown, and the Alliance links more than 200 organizations. The Institute is a partner in The Digitalist Papers, a 2024 essay collection on AI and democratic institutions. McCourt Global, the McCourt family office, launched the effort.",
+    "aiDemocracyAngle": "The Institute helped produce The Digitalist Papers, which asks how AI could renew democratic institutions. In 2026 it published a report on AI agents and the governance of open social networks and presented its responsible AI investment work at an OECD session.",
+    "focusTags": [
+      "digital public infrastructure",
+      "data governance",
+      "responsible AI investment",
+      "open social protocols",
+      "democratic institutions"
+    ],
+    "location": "New York, NY, USA",
+    "founded": 2019,
+    "funders": [
+      "McCourt Global"
+    ],
+    "keyProjects": [
+      {
+        "name": "The Digitalist Papers",
+        "url": "https://www.digitalistpapers.com",
+        "note": "Essays on AI and democratic institutions, with Stanford"
+      },
+      {
+        "name": "Responsible AI investment (OECD session)",
+        "url": "https://www.projectliberty.io/news/oecd-invites-project-liberty-institute-to-present-global-responsible-ai-investment-process/",
+        "note": "Investor engagement on responsible AI, June 2026"
+      },
+      {
+        "name": "Digital infrastructure for the AI era (13 middle-power governments)",
+        "url": "https://www.projectliberty.io/news/building-digital-infrastructure-ready-for-the-ai-era-insights-from-13-middle-power-governments/",
+        "note": "June 2026 report"
+      },
+      {
+        "name": "AI, Agency, and Protocols",
+        "url": "https://www.projectliberty.io/news/ai-agency-and-protocols-power-and-governance-in-open-social-networks/",
+        "note": "April 2026 report on AI agents and open social networks"
+      }
+    ],
+    "logoDomain": "projectliberty.io",
+    "depthRing": "broad"
+  },
+  {
     "slug": "protect-democracy-ai-for-democracy-action-lab",
     "name": "Protect Democracy — AI for Democracy Action Lab",
     "website": "https://protectdemocracy.org/issues/data-technology/ai-democracy-action-lab/",
@@ -4328,6 +4480,45 @@
     ],
     "logoDomain": "survivalandflourishing.fund",
     "depthRing": "adjacent"
+  },
+  {
+    "slug": "tech-oversight-project",
+    "name": "Tech Oversight Project",
+    "website": "https://techoversight.org",
+    "category": "policy-advocacy",
+    "region": "power-peaks",
+    "tagline": "Washington watchdog tracking Big Tech money in AI politics and legislation",
+    "description": "The Tech Oversight Project is a Washington, DC nonprofit that campaigns for legislation holding large technology companies accountable. It was founded in 2022, and Sacha Haworth is its executive director. Its four focus areas are antitrust, youth online safety, AI and data privacy. In June 2026 it launched a research book and an ad library that document the election spending of technology-funded super PACs, including the AI-focused Leading the Future. In June 2025 it co-published The OpenAI Files with The Midas Project.",
+    "aiDemocracyAngle": "Documents how AI companies and their executives spend money to influence elections and legislation. It supports state AI safety laws, including New York's RAISE Act and chatbot protections for minors, and opposes federal preemption of such laws.",
+    "focusTags": [
+      "AI super PACs",
+      "campaign finance",
+      "Big Tech accountability",
+      "AI legislation",
+      "antitrust"
+    ],
+    "location": "Washington, DC, USA",
+    "founded": 2022,
+    "funders": [],
+    "keyProjects": [
+      {
+        "name": "AI Super PAC Research Book",
+        "url": "https://techoversight.org/ai-super-pac-research-book/",
+        "note": "Profiles of technology-funded super PACs and their spending"
+      },
+      {
+        "name": "AI Super PAC Ad Library",
+        "url": "https://techoversight.org/ai-super-pac-ad-library/",
+        "note": "Catalog of ads from tracked super PACs"
+      },
+      {
+        "name": "The OpenAI Files",
+        "url": "https://openaifiles.org",
+        "note": "Report on OpenAI governance, with The Midas Project"
+      }
+    ],
+    "logoDomain": "techoversight.org",
+    "depthRing": "broad"
   },
   {
     "slug": "truemedia-org",

@@ -321,7 +321,9 @@ export function useMapViewport() {
       if (!d) return;
       const dx = e.clientX - d.startX;
       const dy = e.clientY - d.startY;
-      if (Math.abs(dx) + Math.abs(dy) > 3) d.moved = true;
+      // A sub-threshold move must not schedule a gesture: endMousePan only settles moved drags.
+      if (!d.moved && Math.abs(dx) + Math.abs(dy) <= 3) return;
+      d.moved = true;
       liveView.current = clampView(
         { ...liveView.current, x: d.ox + dx, y: d.oy + dy },
         sizeRef.current,
